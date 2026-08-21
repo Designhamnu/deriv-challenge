@@ -16,7 +16,10 @@ export default function StatBlock({
   size = 'display',
   className = '',
 }) {
-  const figure = formatMoneyParts(value, { currency, decimals })
+  // Summary figures are not always money — "45" and "March 2030" are shown
+  // verbatim, with no currency code beside them.
+  const isText = typeof value === 'string'
+  const figure = isText ? null : formatMoneyParts(value, { currency, decimals })
 
   const hasDelta = Number.isFinite(delta)
   const deltaFigure = hasDelta
@@ -34,16 +37,18 @@ export default function StatBlock({
             'tabular-nums text-ink',
           ].join(' ')}
         >
-          {figure.amount}
+          {isText ? value : figure.amount}
         </span>
-        <span
-          className={[
-            size === 'display' ? 'text-small' : 'text-label',
-            'font-medium text-muted',
-          ].join(' ')}
-        >
-          {figure.currency}
-        </span>
+        {figure ? (
+          <span
+            className={[
+              size === 'display' ? 'text-small' : 'text-label',
+              'font-medium text-muted',
+            ].join(' ')}
+          >
+            {figure.currency}
+          </span>
+        ) : null}
       </p>
 
       {deltaFigure ? (

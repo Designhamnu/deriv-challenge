@@ -1,3 +1,9 @@
+const FILL = {
+  paper: 'border-line bg-paper',
+  surface: 'border-line bg-surface',
+  brand: 'border-brand bg-brand text-paper',
+}
+
 export default function Card({
   tone = 'paper',
   className = '',
@@ -7,8 +13,8 @@ export default function Card({
   return (
     <div
       className={[
-        'rounded-card border border-line p-6',
-        tone === 'surface' ? 'bg-surface' : 'bg-paper',
+        'rounded-card border p-6',
+        FILL[tone] ?? FILL.paper,
         className,
       ].join(' ')}
       {...rest}

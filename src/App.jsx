@@ -1,9 +1,14 @@
-import SpecSheet from './SpecSheet.jsx'
+import AppShell from './AppShell.jsx'
+import GoalScreen from './GoalScreen.jsx'
 
 /**
- * Swap the render below for the real screen when it lands. The spec sheet
- * stays importable from './SpecSheet.jsx' either way.
+ * The spec sheet stays available at ./SpecSheet.jsx.
+ * Pass `goal={null}` to GoalScreen to see the empty rendering path.
  */
 export default function App() {
-  return <SpecSheet />
+  return (
+    <AppShell>
+      <GoalScreen />
+    </AppShell>
+  )
 }

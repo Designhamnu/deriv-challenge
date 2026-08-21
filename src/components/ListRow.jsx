@@ -14,18 +14,31 @@ export default function ListRow({
   decimals,
   signed = true,
   badge,
+  active = false,
   onClick,
   className = '',
 }) {
-  const figure = formatMoneyParts(value, { currency, decimals, signed })
-  const tone = signed ? DIRECTION_TONE[figure.direction] : 'text-ink'
+  // Navigation rows carry no amount — the figure is optional.
+  const hasValue = value !== undefined && value !== null
+  const figure = hasValue
+    ? formatMoneyParts(value, { currency, decimals, signed })
+    : null
+
+  const tone = signed && figure ? DIRECTION_TONE[figure.direction] : 'text-ink'
   const interactive = typeof onClick === 'function'
 
   const body = (
     <>
       <span className="flex min-w-0 flex-col">
         <span className="flex items-center gap-2">
-          <span className="truncate text-body text-ink">{label}</span>
+          <span
+            className={[
+              'truncate text-body',
+              active ? 'text-brand' : 'text-ink',
+            ].join(' ')}
+          >
+            {label}
+          </span>
           {badge}
         </span>
         {secondary ? (
@@ -35,27 +48,32 @@ export default function ListRow({
         ) : null}
       </span>
 
-      <span className={['shrink-0 text-body tabular-nums', tone].join(' ')}>
-        {figure.amount}{' '}
-        <span className="text-label font-medium text-muted">
-          {figure.currency}
+      {figure ? (
+        <span className={['shrink-0 text-body tabular-nums', tone].join(' ')}>
+          {figure.amount}{' '}
+          <span className="text-label font-medium text-muted">
+            {figure.currency}
+          </span>
         </span>
-      </span>
+      ) : null}
     </>
   )
 
-  const shared =
-    'flex items-center justify-between gap-4 border-b border-line px-4 py-4 last:border-b-0'
+  const shared = [
+    'flex items-center justify-between gap-4 border-b border-line px-4 py-4 last:border-b-0',
+    active ? 'bg-brand-soft' : '',
+  ].join(' ')
 
   if (interactive) {
     return (
       <button
         type="button"
         onClick={onClick}
+        aria-current={active ? 'page' : undefined}
         className={[
           shared,
           'w-full cursor-pointer text-left transition-fill',
-          'hover:bg-surface',
+          active ? '' : 'hover:bg-surface',
           'focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus',
           className,
         ].join(' ')}
@@ -65,5 +83,9 @@ export default function ListRow({
     )
   }
 
-  return <div className={[shared, className].join(' ')}>{body}</div>
+  return (
+    <div aria-current={active ? 'page' : undefined} className={[shared, className].join(' ')}>
+      {body}
+    </div>
+  )
 }
