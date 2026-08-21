@@ -14,15 +14,16 @@ const SIZES = {
   hero: { className: 'size-70', px: 280 },
 }
 
-export default function Avatar({ size = 'message' }) {
+export default function Avatar({ size = 'message', framed = false }) {
   const [failed, setFailed] = useState(false)
   const { className, px } = SIZES[size] ?? SIZES.message
+  const frame = framed ? 'border border-line bg-brand-soft object-top' : ''
 
   if (failed) {
     return (
       <span
         aria-hidden="true"
-        className={`${className} shrink-0 rounded-full bg-brand-soft`}
+        className={`${className} ${framed ? 'border border-line' : ''} shrink-0 rounded-full bg-brand-soft`}
       />
     )
   }
@@ -35,7 +36,7 @@ export default function Avatar({ size = 'message' }) {
       width={px}
       height={px}
       onError={() => setFailed(true)}
-      className={`${className} shrink-0 rounded-full object-cover`}
+      className={`${className} ${frame} shrink-0 rounded-full object-cover`}
     />
   )
 }

@@ -12,6 +12,8 @@ export const WELCOME = {
   greeting: "Assalamu alaikum, I'm Hamood",
   tagline: 'Your AI savings coach on Nawa.',
   chips: ['A home', 'A car', 'A wedding', 'Something else'],
+  // Prefixes a chip choice so the first user message reads as a sentence.
+  goalPrefix: 'I want to save money for: ',
   fieldLabel: 'What are you saving for?',
   fieldPlaceholder: 'Or tell me in your own words',
 }

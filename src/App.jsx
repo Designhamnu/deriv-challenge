@@ -11,7 +11,7 @@ export default function App() {
   const path = usePath()
 
   return (
-    <AppShell>
+    <AppShell background={path === '/assistant' ? 'brand-soft' : 'paper'}>
       {path === '/assistant' ? <AssistantScreen /> : <GoalScreen />}
     </AppShell>
   )

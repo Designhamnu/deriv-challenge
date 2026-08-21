@@ -7,6 +7,7 @@ export default function Field({
   id,
   type = 'text',
   disabled = false,
+  labelHidden = false,
   className = '',
   ...rest
 }) {
@@ -17,7 +18,10 @@ export default function Field({
 
   return (
     <div className={['flex flex-col', className].join(' ')}>
-      <label htmlFor={inputId} className="mb-2 text-label text-muted">
+      <label
+        htmlFor={inputId}
+        className={labelHidden ? 'sr-only' : 'mb-2 text-label text-muted'}
+      >
         {label}
       </label>
 

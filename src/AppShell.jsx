@@ -8,7 +8,7 @@ import { navigate, usePath } from './lib/router.js'
  * the content. Nav items are ListRows — the active one takes a brand-soft
  * fill and brand text.
  */
-export default function AppShell({ children }) {
+export default function AppShell({ background = 'paper', children }) {
   const path = usePath()
 
   return (
@@ -34,7 +34,12 @@ export default function AppShell({ children }) {
         </nav>
       </header>
 
-      <main className="md:ml-[260px]">
+      <main
+        className={[
+          'min-h-screen md:ml-[260px]',
+          background === 'brand-soft' ? 'bg-brand-soft' : 'bg-paper',
+        ].join(' ')}
+      >
         <div className="mx-auto max-w-[960px] p-4 sm:p-8">{children}</div>
       </main>
     </div>

@@ -31,20 +31,20 @@ function ThinkingDots() {
   )
 }
 
-function AssistantRow({ children }) {
+function AssistantRow({ spacing = '', children }) {
   return (
-    <div className="flex gap-4">
-      <Avatar />
-      <div className="flex w-fit flex-col gap-4">{children}</div>
+    <div className={`flex gap-4 ${spacing}`}>
+      <Avatar framed />
+      <div className="flex w-fit max-w-[75%] flex-col gap-4">{children}</div>
     </div>
   )
 }
 
-function UserRow({ text }) {
+function UserRow({ text, spacing = '' }) {
   return (
-    <div className="flex justify-end">
-      <Card className="w-fit">
-        <p className="text-body text-ink">{text}</p>
+    <div className={`flex justify-end ${spacing}`}>
+      <Card tone="brand" className="w-fit max-w-[75%]">
+        <p className="text-body">{text}</p>
       </Card>
     </div>
   )
@@ -75,12 +75,19 @@ export default function AssistantScreen() {
     })
   }, [messages, thinking, phase])
 
+  // 8px between assistant Cards inside one turn, 24px between turns.
+  const spacingFor = (message, index) => {
+    if (index === 0) return ''
+    return message.grouped ? 'mt-2' : 'mt-6'
+  }
+
   const later = (fn, ms) => timers.current.push(setTimeout(fn, ms))
   const say = (message) => setMessages((prev) => [...prev, message])
 
-  const choose = (answer) => {
-    const text = answer.trim()
-    if (!text) return
+  const choose = (answer, { prefixed = false } = {}) => {
+    const raw = answer.trim()
+    if (!raw) return
+    const text = prefixed ? `${WELCOME.goalPrefix}${raw}` : raw
 
     setPhase('chat')
     setMessages([{ id: 'user-goal', role: 'user', text }])
@@ -90,7 +97,12 @@ export default function AssistantScreen() {
     later(() => {
       setThinking(false)
       SCRIPT.firstReply.forEach((line, index) =>
-        say({ id: `reply-${index}`, role: 'assistant', text: line }),
+        say({
+          id: `reply-${index}`,
+          role: 'assistant',
+          text: line,
+          grouped: index > 0,
+        }),
       )
       setStep('income')
     }, TIMING.firstReply)
@@ -155,7 +167,7 @@ export default function AssistantScreen() {
                   key={chip}
                   variant="secondary"
                   className="w-full"
-                  onClick={() => choose(chip)}
+                  onClick={() => choose(chip, { prefixed: true })}
                 >
                   {chip}
                 </Button>
@@ -186,17 +198,19 @@ export default function AssistantScreen() {
         role="log"
         aria-live="polite"
         aria-relevant="additions"
-        className="flex flex-1 flex-col gap-6"
+        className="flex flex-1 flex-col"
       >
-        {messages.map((message) => {
+        {messages.map((message, index) => {
+          const spacing = spacingFor(message, index)
+
           if (message.role === 'user') {
-            return <UserRow key={message.id} text={message.text} />
+            return <UserRow key={message.id} text={message.text} spacing={spacing} />
           }
 
           if (!message.plan) {
             return (
-              <AssistantRow key={message.id}>
-                <Card tone="surface">
+              <AssistantRow key={message.id} spacing={spacing}>
+                <Card>
                   <p className="text-body text-ink">{message.text}</p>
                 </Card>
               </AssistantRow>
@@ -204,8 +218,8 @@ export default function AssistantScreen() {
           }
 
           return (
-            <AssistantRow key={message.id}>
-              <Card tone="surface">
+            <AssistantRow key={message.id} spacing={spacing}>
+              <Card>
                 <p className="text-body text-ink">{SCRIPT.planIntro}</p>
 
                 <div className="mt-6 grid gap-4 sm:grid-cols-2">
@@ -245,8 +259,8 @@ export default function AssistantScreen() {
         })}
 
         {thinking ? (
-          <AssistantRow>
-            <Card tone="surface">
+          <AssistantRow spacing={messages.length ? 'mt-6' : ''}>
+            <Card>
               <p className="flex items-center gap-2 text-small text-muted">
                 {THINKING_LABEL}
                 <ThinkingDots />
@@ -259,11 +273,12 @@ export default function AssistantScreen() {
       </div>
 
       {composerOpen ? (
-        <div className="sticky bottom-0 mt-8 border-t border-line bg-paper py-4">
+        <div className="sticky bottom-0 mt-8 border-t border-line bg-paper p-4">
           <form onSubmit={handleSubmit} className="flex items-end gap-4">
             <Field
               className="flex-1"
               label={COMPOSER.label}
+              labelHidden
               type="number"
               placeholder={COMPOSER.placeholder}
               value={draft}
