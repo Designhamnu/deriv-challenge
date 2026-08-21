@@ -52,7 +52,7 @@ export const SCRIPT = {
   ],
 
   actions: [
-    { id: 'start-5000', label: 'Start with 5,000', variant: 'primary', starts: true },
+    { id: 'start-5000', label: 'Start with 5,000', variant: 'secondary', starts: true },
     { id: 'start-3500', label: 'Start with 3,500', variant: 'secondary', starts: true },
     { id: 'think', label: 'Let me think', variant: 'ghost', starts: false },
   ],

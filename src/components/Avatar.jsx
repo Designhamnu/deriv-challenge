@@ -14,7 +14,7 @@ import { useState } from 'react'
  */
 const SIZES = {
   mark: { className: 'size-8', px: 32, zoom: '' },
-  message: { className: 'size-10', px: 40, zoom: '' },
+  message: { className: 'size-10', px: 40, zoom: 'origin-top scale-200' },
   hero: { className: 'size-90', px: 360, zoom: 'scale-150' },
 }
 
