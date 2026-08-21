@@ -26,3 +26,19 @@ export function formatMonth(value, options = {}) {
   if (!date) return '—'
   return new Intl.DateTimeFormat(locale, { month: 'long' }).format(date)
 }
+
+/** "March 2030" */
+export function formatMonthYear(value, options = {}) {
+  const { locale = DEFAULT_LOCALE } = options
+  const date = parse(value)
+  if (!date) return '—'
+  return new Intl.DateTimeFormat(locale, { month: 'long', year: 'numeric' }).format(date)
+}
+
+/** The month a plan completes, `months` from today. */
+export function monthsFromNow(months) {
+  const date = new Date()
+  date.setDate(1)
+  date.setMonth(date.getMonth() + months)
+  return date
+}

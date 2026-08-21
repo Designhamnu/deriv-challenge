@@ -26,7 +26,7 @@ function duration(target, monthly) {
   return years === 1 ? 'a year' : `${years} years`
 }
 
-function goal({ id, label, prompt, target, monthly, turn2, turn3 }) {
+function goal({ id, label, prompt, keywords = [], target, monthly, turn2, turn3 }) {
   const context = {
     target: aed(target),
     monthly: aed(monthly),
@@ -37,6 +37,7 @@ function goal({ id, label, prompt, target, monthly, turn2, turn3 }) {
     id,
     label,
     prompt,
+    keywords,
     target,
     monthly,
     currency: CURRENCY,
@@ -51,6 +52,7 @@ function goal({ id, label, prompt, target, monthly, turn2, turn3 }) {
 export const GOALS = [
   goal({
     id: 'home',
+    keywords: ['home', 'house', 'apartment', 'flat', 'villa', 'property', 'down payment', 'deposit'],
     label: 'Home',
     prompt: 'I want to buy a home',
     target: 420000,
@@ -63,6 +65,7 @@ export const GOALS = [
 
   goal({
     id: 'car',
+    keywords: ['car', 'vehicle', 'suv', 'motor'],
     label: 'Car',
     prompt: 'I want to buy a car',
     target: 90000,
@@ -75,6 +78,7 @@ export const GOALS = [
 
   goal({
     id: 'wedding',
+    keywords: ['wedding', 'marriage', 'married', 'engagement'],
     label: 'Wedding',
     prompt: 'I am saving for my wedding',
     target: 180000,
@@ -87,6 +91,7 @@ export const GOALS = [
 
   goal({
     id: 'travel',
+    keywords: ['travel', 'trip', 'holiday', 'vacation', 'flight'],
     label: 'Travel',
     prompt: 'I want to save for a trip',
     target: 24000,
@@ -99,6 +104,7 @@ export const GOALS = [
 
   goal({
     id: 'emergency-fund',
+    keywords: ['emergency', 'rainy day', 'safety net', 'buffer'],
     label: 'Emergency fund',
     prompt: 'I want to build an emergency fund',
     target: 72000,
@@ -126,4 +132,16 @@ export const GENERIC_GOAL = goal({
 /** Look up a goal by id, falling back to the generic one. */
 export function goalFor(id) {
   return GOALS.find((entry) => entry.id === id) ?? GENERIC_GOAL
+}
+
+/**
+ * Keyword-match free text against the goal types, falling back to the generic
+ * goal. Whole-word matching so "car" does not fire on "scared".
+ */
+export function matchGoal(text) {
+  const answer = String(text ?? '').toLowerCase()
+  const hit = GOALS.find((entry) =>
+    entry.keywords.some((keyword) => new RegExp(`\\b${keyword}\\b`).test(answer)),
+  )
+  return hit ?? GENERIC_GOAL
 }

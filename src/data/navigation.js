@@ -1,9 +1,8 @@
 export const WORDMARK = 'Deriv Save'
 
 export const NAV_ITEMS = [
-  { id: 'assistant', label: 'Assistant' },
-  { id: 'goals', label: 'Goals' },
-  { id: 'activity', label: 'Activity' },
+  { id: 'assistant', label: 'Assistant', path: '/assistant' },
+  { id: 'goals', label: 'Goals', path: '/' },
+  // No route yet — renders as a static row rather than a dead link.
+  { id: 'activity', label: 'Activity', path: null },
 ]
-
-export const ACTIVE_NAV_ID = 'goals'
