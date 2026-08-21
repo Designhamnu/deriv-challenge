@@ -26,7 +26,7 @@ function duration(target, monthly) {
   return years === 1 ? 'a year' : `${years} years`
 }
 
-function goal({ id, label, prompt, keywords = [], target, monthly, turn2, turn3 }) {
+function goal({ id, label, screenTitle, prompt, keywords = [], target, monthly, turn2, turn3 }) {
   const context = {
     target: aed(target),
     monthly: aed(monthly),
@@ -36,6 +36,7 @@ function goal({ id, label, prompt, keywords = [], target, monthly, turn2, turn3 
   return {
     id,
     label,
+    screenTitle: screenTitle ?? label,
     prompt,
     keywords,
     target,
@@ -54,6 +55,7 @@ export const GOALS = [
     id: 'home',
     keywords: ['home', 'house', 'apartment', 'flat', 'villa', 'property', 'down payment', 'deposit'],
     label: 'Home',
+    screenTitle: 'Home down payment',
     prompt: 'I want to buy a home',
     target: 420000,
     monthly: 7000,
@@ -120,6 +122,7 @@ export const GOALS = [
 export const GENERIC_GOAL = goal({
   id: 'generic',
   label: 'Something else',
+  screenTitle: 'Savings goal',
   prompt: 'I am saving for something else',
   target: 48000,
   monthly: 2000,
@@ -145,3 +148,8 @@ export function matchGoal(text) {
   )
   return hit ?? GENERIC_GOAL
 }
+
+/** Lookup by id, including the generic fallback. */
+export const GOALS_BY_ID = Object.fromEntries(
+  [...GOALS, GENERIC_GOAL].map((entry) => [entry.id, entry]),
+)

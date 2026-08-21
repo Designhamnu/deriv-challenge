@@ -6,6 +6,7 @@ import Field from './components/Field.jsx'
 import StatBlock from './components/StatBlock.jsx'
 import {
   COMPOSER,
+  replyFor,
   SCRIPT,
   THINKING_LABEL,
   TIMING,
@@ -13,8 +14,10 @@ import {
 } from './data/conversation.js'
 import { formatMoney } from './lib/money.js'
 import { monthlyContribution } from './lib/plan.js'
+import { matchGoal } from './data/goals.js'
 import { ROUTES } from './data/navigation.js'
 import { navigate } from './lib/router.js'
+import { setSelectedGoalId } from './lib/store.js'
 
 const DOT_DELAYS = [0, 150, 300]
 
@@ -56,6 +59,7 @@ export default function AssistantScreen() {
   const [phase, setPhase] = useState('welcome')
   const [messages, setMessages] = useState([])
   const [step, setStep] = useState('idle')
+  const [goal, setGoal] = useState(null)
   const [draft, setDraft] = useState('')
   const [error, setError] = useState('')
   const [thinking, setThinking] = useState(false)
@@ -90,7 +94,10 @@ export default function AssistantScreen() {
     const raw = answer.trim()
     if (!raw) return
     const text = prefixed ? `${WELCOME.goalPrefix}${raw}` : raw
+    // Match on what they actually said, not the prefixed sentence.
+    const matched = matchGoal(raw)
 
+    setGoal(matched)
     setPhase('chat')
     setMessages([{ id: 'user-goal', role: 'user', text }])
     setDraft('')
@@ -98,7 +105,7 @@ export default function AssistantScreen() {
 
     later(() => {
       setThinking(false)
-      SCRIPT.firstReply.forEach((line, index) =>
+      replyFor(matched).forEach((line, index) =>
         say({
           id: `reply-${index}`,
           role: 'assistant',
@@ -144,6 +151,7 @@ export default function AssistantScreen() {
       setStep('dismissed')
       return
     }
+    if (goal) setSelectedGoalId(goal.id)
     say({ id: 'confirmation', role: 'assistant', confirmation: true })
     setStep('done')
   }

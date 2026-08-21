@@ -4,12 +4,25 @@ import Icon from './components/Icon.jsx'
 import ListRow from './components/ListRow.jsx'
 import ProgressBar from './components/ProgressBar.jsx'
 import StatBlock from './components/StatBlock.jsx'
+import { GOALS_BY_ID } from './data/goals.js'
 import { formatDate, formatMonth } from './lib/date.js'
+import { formatMoney } from './lib/money.js'
+import { useSelectedGoalId } from './lib/store.js'
 import {
   ACTIVE_GOAL,
   EMPTY_GOAL,
   RECENT_CONTRIBUTIONS,
 } from './data/activeGoal.js'
+
+const GOAL_ICONS = {
+  home: 'home',
+  car: 'car',
+  wedding: 'rings',
+  'emergency-fund': 'shield',
+  // Not among the four named types — falls back to the savings icon.
+  travel: 'wallet',
+  generic: 'wallet',
+}
 
 const SUMMARY_ICONS = {
   monthly: 'wallet',
@@ -25,6 +38,9 @@ export default function GoalScreen({
   goal = ACTIVE_GOAL,
   contributions = RECENT_CONTRIBUTIONS,
 }) {
+  const selectedId = useSelectedGoalId()
+  const chosen = selectedId ? GOALS_BY_ID[selectedId] : null
+
   if (!goal) {
     return (
       <Card>
@@ -37,10 +53,22 @@ export default function GoalScreen({
     )
   }
 
+  const title = chosen?.screenTitle ?? goal.title
+  const target = chosen?.target ?? goal.target
+  const currency = chosen?.currency ?? goal.currency
+  // The default screen keeps the caption exactly as the PRD writes it; a
+  // chosen goal has its target formatted through money.js.
+  const targetCaption = chosen
+    ? `of ${formatMoney(target, { currency, decimals: 0 })} target`
+    : goal.targetCaption
+
   return (
     <div className="flex flex-col gap-8">
-      <header>
-        <h1 className="text-title text-ink">{goal.title}</h1>
+      <header className="flex items-center gap-3">
+        <span className="text-ink">
+          <Icon name={GOAL_ICONS[chosen?.id ?? 'home'] ?? 'wallet'} size="md" />
+        </span>
+        <h1 className="text-title text-ink">{title}</h1>
       </header>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -69,11 +97,11 @@ export default function GoalScreen({
           <div className="mt-6">
             <ProgressBar
               value={goal.saved}
-              max={goal.target}
-              label={`${goal.title} progress`}
+              max={target}
+              label={`${title} progress`}
               tone="onBrand"
             />
-            <p className="mt-2 text-small text-paper/90">{goal.targetCaption}</p>
+            <p className="mt-2 text-small text-paper/90">{targetCaption}</p>
           </div>
         </Card>
 

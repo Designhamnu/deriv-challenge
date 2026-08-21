@@ -31,10 +31,15 @@ export const COMPOSER = {
 export const SCRIPT = {
   currency: 'AED',
 
-  firstReply: [
+  // The home path keeps the copy from the brief, word for word. Every other
+  // goal takes its cost estimate from src/data/goals.js and is followed by the
+  // same income question.
+  homeReply: [
     "A home in Dubai. Good — that's the one most people put off because the number scares them.",
     "A 2-bedroom in JVC runs about AED 1.2M. You'd need around AED 240,000 down, plus roughly AED 50,000 in fees people forget about. Call it AED 290,000. What do you take home a month?",
   ],
+
+  incomeQuestion: 'What do you take home a month?',
 
   // The income is echoed back, so this reads from what was actually entered.
   planIntro: (income) => `At ${income} a month, here's the real picture:`,
@@ -68,4 +73,10 @@ export const SCRIPT = {
 export const TIMING = {
   firstReply: 1200,
   plan: 1800,
+}
+
+/** The assistant's opening reply for a matched goal, as one or two Cards. */
+export function replyFor(goal) {
+  if (goal.id === 'home') return SCRIPT.homeReply
+  return [goal.response.turn2, SCRIPT.incomeQuestion]
 }
