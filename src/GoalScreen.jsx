@@ -38,7 +38,7 @@ export default function GoalScreen({
         <Badge tone="neutral">{goal.status}</Badge>
       </header>
 
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {goal.summary.map((item) => (
           <Card key={item.id}>
             <StatBlock

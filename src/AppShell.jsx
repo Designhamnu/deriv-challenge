@@ -1,3 +1,4 @@
+import Avatar from './components/Avatar.jsx'
 import ListRow from './components/ListRow.jsx'
 import { NAV_ITEMS, WORDMARK } from './data/navigation.js'
 import { navigate, usePath } from './lib/router.js'
@@ -13,7 +14,10 @@ export default function AppShell({ children }) {
   return (
     <div className="min-h-screen bg-paper">
       <header className="border-b border-line bg-paper py-6 md:fixed md:inset-y-0 md:left-0 md:w-[260px] md:overflow-y-auto md:border-r md:border-b-0 md:py-8">
-        <p className="px-4 text-heading text-brand">{WORDMARK}</p>
+        <div className="flex items-center gap-3 px-4">
+          <Avatar />
+          <p className="text-heading text-brand">{WORDMARK}</p>
+        </div>
 
         <nav aria-label="Main" className="mt-6">
           {NAV_ITEMS.map((item) => (

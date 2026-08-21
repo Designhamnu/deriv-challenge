@@ -21,6 +21,7 @@ export const ACTIVE_GOAL = {
     { id: 'monthly', label: 'Monthly contribution', value: 5000 },
     { id: 'remaining', label: 'Months remaining', value: '45' },
     { id: 'date', label: 'On track for', value: 'March 2030' },
+    { id: 'streak', label: 'Saving streak', value: '3 months' },
   ],
 
   contributionsHeading: 'Recent contributions',

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import Avatar from './components/Avatar.jsx'
 import Button from './components/Button.jsx'
 import Card from './components/Card.jsx'
 import Field from './components/Field.jsx'
@@ -11,32 +12,6 @@ import { navigate } from './lib/router.js'
 
 const THINKING_MS = 800
 const CONFIRM_MS = 900
-
-/** 40px avatar, falling back to a brand-soft circle if the image is missing. */
-function Avatar() {
-  const [failed, setFailed] = useState(false)
-
-  if (failed) {
-    return (
-      <span
-        aria-hidden="true"
-        className="size-10 shrink-0 rounded-full bg-brand-soft"
-      />
-    )
-  }
-
-  return (
-    <img
-      src="/assistant.png"
-      alt=""
-      aria-hidden="true"
-      width="40"
-      height="40"
-      onError={() => setFailed(true)}
-      className="size-10 shrink-0 rounded-full object-cover"
-    />
-  )
-}
 
 function AssistantMessage({ children }) {
   return (
