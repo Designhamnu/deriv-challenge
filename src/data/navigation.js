@@ -3,6 +3,8 @@ export const WORDMARK = 'Nawa'
 export const ROUTES = {
   assistant: '/',
   goals: '/goals',
+  // Design-system reference. Not in the sidebar — reachable by URL.
+  spec: '/spec',
 }
 
 export const NAV_ITEMS = [
