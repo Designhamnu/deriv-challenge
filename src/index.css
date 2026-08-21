@@ -6,8 +6,9 @@
     Arial, sans-serif;
 
   /* Colour ---------------------------------------------------------------- */
-  --color-brand: #ff444f;
-  --color-brand-hover: #e63946;
+  --color-brand: #0f7a56;
+  --color-brand-hover: #0c6446;
+  --color-brand-soft: #e7f3ee;
   --color-ink: #0e0e0e;
   --color-muted: #6e6e73;
   --color-paper: #ffffff;
