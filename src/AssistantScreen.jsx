@@ -14,10 +14,10 @@ import {
 } from './data/conversation.js'
 import { formatAmount, formatMoney } from './lib/money.js'
 import {
-  monthlyContribution,
+  isAffordable,
   monthsToTarget,
+  planOptions,
   shareOfIncome,
-  slowerContribution,
 } from './lib/plan.js'
 import { matchGoal } from './data/goals.js'
 import { ROUTES } from './data/navigation.js'
@@ -69,6 +69,9 @@ export default function AssistantScreen() {
   const [draft, setDraft] = useState('')
   const [error, setError] = useState('')
   const [thinking, setThinking] = useState(false)
+  const [customOpen, setCustomOpen] = useState(false)
+  const [customDraft, setCustomDraft] = useState('')
+  const [customError, setCustomError] = useState('')
 
   const timers = useRef([])
   const endRef = useRef(null)
@@ -85,7 +88,8 @@ export default function AssistantScreen() {
       behavior: reduce ? 'auto' : 'smooth',
       block: 'end',
     })
-  }, [messages, thinking, phase])
+    // customOpen included so revealing the amount field scrolls it into view
+  }, [messages, thinking, phase, customOpen])
 
   // 8px between assistant Cards inside one turn, 24px between turns.
   const spacingFor = (message, index) => {
@@ -143,37 +147,58 @@ export default function AssistantScreen() {
 
     later(() => {
       setThinking(false)
-      const faster = monthlyContribution(income)
-      const slower = slowerContribution(income)
+      const affordable = isAffordable(goal.monthly, income)
+      const { faster, slower } = planOptions(income)
 
       say({
         id: 'plan',
         role: 'assistant',
-        plan: {
-          income,
-          faster,
-          slower,
-          share: shareOfIncome(faster, income),
-          fasterDate: formatMonthYear(
-            monthsFromNow(monthsToTarget(goal.target, faster)),
-          ),
-          slowerDate: formatMonthYear(
-            monthsFromNow(monthsToTarget(goal.target, slower)),
-          ),
-        },
+        plan: affordable
+          ? {
+              income,
+              affordable,
+              faster,
+              slower,
+              share: shareOfIncome(faster, income),
+              fasterDate: formatMonthYear(
+                monthsFromNow(monthsToTarget(goal.target, faster)),
+              ),
+              slowerDate: formatMonthYear(
+                monthsFromNow(monthsToTarget(goal.target, slower)),
+              ),
+            }
+          : { income, affordable },
       })
       setStep('plan')
     }, TIMING.plan)
   }
 
-  const act = (action) => {
-    if (!action.starts) {
-      setStep('dismissed')
-      return
-    }
+  const adopt = () => {
     if (goal) setSelectedGoalId(goal.id)
     say({ id: 'confirmation', role: 'assistant', confirmation: true })
+    setCustomOpen(false)
     setStep('done')
+  }
+
+  const act = (action) => {
+    if (action.custom) {
+      setCustomOpen(true)
+      return
+    }
+    adopt()
+  }
+
+  const submitCustom = (event) => {
+    event.preventDefault()
+    const amount = Number(customDraft.trim())
+
+    if (!customDraft.trim() || !Number.isFinite(amount) || amount <= 0) {
+      setCustomError(SCRIPT.customField.error)
+      return
+    }
+
+    setCustomError('')
+    adopt()
   }
 
   const handleSubmit = (event) => {
@@ -276,49 +301,63 @@ export default function AssistantScreen() {
           return (
             <AssistantRow key={message.id} spacing={spacing}>
               <Card>
-                <p className="text-body text-ink">
-                  {SCRIPT.planIntro(
-                    formatMoney(message.plan.income, {
-                      currency: SCRIPT.currency,
-                      decimals: 0,
-                    }),
-                  )}
-                </p>
+                {message.plan.affordable ? (
+                  <>
+                    <p className="text-body text-ink">
+                      {SCRIPT.planIntro(
+                        formatMoney(message.plan.income, {
+                          currency: SCRIPT.currency,
+                          decimals: 0,
+                        }),
+                      )}
+                    </p>
 
-                <div className="mt-6 grid gap-4 sm:grid-cols-2">
-                  <StatBlock
-                    label={SCRIPT.planLabels.monthly}
-                    value={message.plan.faster}
-                    currency={SCRIPT.currency}
-                    size="body"
-                  />
-                  <StatBlock
-                    label={SCRIPT.planLabels.date}
-                    value={message.plan.fasterDate}
-                    size="body"
-                  />
-                </div>
+                    <div className="mt-6 grid gap-4 sm:grid-cols-2">
+                      <StatBlock
+                        label={SCRIPT.planLabels.monthly}
+                        value={message.plan.faster}
+                        currency={SCRIPT.currency}
+                        size="body"
+                      />
+                      <StatBlock
+                        label={SCRIPT.planLabels.date}
+                        value={message.plan.fasterDate}
+                        size="body"
+                      />
+                    </div>
 
-                {SCRIPT.planNotes({
-                  share: message.plan.share,
-                  slower: formatMoney(message.plan.slower, {
-                    currency: SCRIPT.currency,
-                    decimals: 0,
-                  }),
-                  slowerDate: message.plan.slowerDate,
-                }).map((note) => (
-                  <p key={note} className="mt-6 text-body text-ink">
-                    {note}
+                    {SCRIPT.planNotes({
+                      share: message.plan.share,
+                      slower: formatMoney(message.plan.slower, {
+                        currency: SCRIPT.currency,
+                        decimals: 0,
+                      }),
+                      slowerDate: message.plan.slowerDate,
+                    }).map((note) => (
+                      <p key={note} className="mt-6 text-body text-ink">
+                        {note}
+                      </p>
+                    ))}
+                  </>
+                ) : (
+                  <p className="text-body text-ink">
+                    {SCRIPT.tooLow(formatAmount(message.plan.income))}
                   </p>
-                ))}
+                )}
               </Card>
 
               {step === 'plan' ? (
                 <div className="flex flex-wrap gap-4">
-                  {SCRIPT.actions({
-                    faster: formatAmount(message.plan.faster),
-                    slower: formatAmount(message.plan.slower),
-                  }).map((action) => (
+                  {(message.plan.affordable
+                    ? [
+                        ...SCRIPT.suggestedActions({
+                          faster: formatAmount(message.plan.faster),
+                          slower: formatAmount(message.plan.slower),
+                        }),
+                        SCRIPT.customAction,
+                      ]
+                    : [SCRIPT.customAction]
+                  ).map((action) => (
                     <Button
                       key={action.id}
                       variant={action.variant}
@@ -328,6 +367,27 @@ export default function AssistantScreen() {
                     </Button>
                   ))}
                 </div>
+              ) : null}
+
+              {step === 'plan' && customOpen ? (
+                <form onSubmit={submitCustom} className="flex items-end gap-4">
+                  <Field
+                    className="flex-1"
+                    label={SCRIPT.customField.label}
+                    labelHidden
+                    type="text"
+                    placeholder={SCRIPT.customField.placeholder}
+                    value={customDraft}
+                    error={customError || undefined}
+                    onChange={(event) => {
+                      setCustomDraft(event.target.value)
+                      if (customError) setCustomError('')
+                    }}
+                  />
+                  <Button type="submit" variant="primary">
+                    {SCRIPT.customField.submit}
+                  </Button>
+                </form>
               ) : null}
             </AssistantRow>
           )

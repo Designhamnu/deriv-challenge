@@ -23,7 +23,7 @@ export const THINKING_LABEL = 'Hamood is thinking'
 export const COMPOSER = {
   send: 'Send',
   label: 'What do you take home a month?',
-  placeholder: 'Monthly take-home',
+  placeholder: 'Type your answer',
   error:
     "That doesn't look like a number — how much do you take home each month?",
 }
@@ -56,11 +56,34 @@ export const SCRIPT = {
     `If that's too tight, ${slower} gets you there by ${slowerDate}. Slower, but you'd still have a life.`,
   ],
 
-  actions: ({ faster, slower }) => [
+  // Shown when the goal is out of reach on this income. [X] is the income,
+  // so it takes the bare number — the sentence supplies the currency.
+  tooLow: (income) =>
+    `At ${income} AED a month, this goal would take longer than most plans make sense for. Either the target needs to come down, or this is one to come back to when your income changes.`,
+
+  suggestedActions: ({ faster, slower }) => [
     { id: 'start-faster', label: `Start with ${faster}`, variant: 'secondary', starts: true },
     { id: 'start-slower', label: `Start with ${slower}`, variant: 'secondary', starts: true },
-    { id: 'think', label: 'Let me think', variant: 'ghost', starts: false },
   ],
+
+  customAction: {
+    id: 'custom',
+    label: 'Enter my own amount',
+    variant: 'ghost',
+    custom: true,
+  },
+
+  // The label is carried for screen readers only — the placeholder is the
+  // visible prompt, per the brief.
+  customField: {
+    label: 'Monthly amount you can save',
+    placeholder: 'Monthly amount you can save',
+    // DERIVED, not supplied — mirrors the income error, asking the other question.
+    error:
+      "That doesn't look like a number — how much can you save each month?",
+    // DERIVED, not supplied — follows the "Start with ..." naming of the suggestions.
+    submit: 'Start with this amount',
+  },
 
   // Split around the inline link to the goal screen.
   confirmation: {
