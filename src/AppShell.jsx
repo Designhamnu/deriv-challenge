@@ -26,7 +26,7 @@ export default function AppShell({ children }) {
               key={item.id}
               label={item.label}
               active={item.matches.includes(path)}
-              muted={!item.path}
+              muted={Boolean(item.muted)}
               badge={
                 item.badge ? <Badge tone="neutral">{item.badge}</Badge> : undefined
               }

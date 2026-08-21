@@ -58,7 +58,7 @@ export default function SpecSheet() {
         {/* Button ---------------------------------------------------------- */}
         <Section
           title="Button"
-          note="44px tall, 24px horizontal padding, pill radius, 14px/500 label. Brand red is reserved for the primary variant."
+          note="44px tall, 24px horizontal padding, pill radius, 14px/500 label. Brand green is reserved for the primary variant."
         >
           <div className="flex flex-col gap-6">
             <Spec label="Default">
@@ -165,7 +165,7 @@ export default function SpecSheet() {
         {/* Badge ----------------------------------------------------------- */}
         <Section
           title="Badge"
-          note="Pill, 12px label type, low-opacity tonal fill. Direction colours only — brand red never appears on a status indicator."
+          note="Pill, 12px label type, low-opacity tonal fill. Direction colours only — brand green never appears on a status indicator."
         >
           <div className="flex flex-wrap items-center gap-4">
             <Badge tone="neutral">Pending</Badge>

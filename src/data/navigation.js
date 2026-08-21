@@ -18,7 +18,22 @@ export const NAV_ITEMS = [
   { id: 'goals', label: 'My savings', path: ROUTES.goals, matches: [ROUTES.goals] },
   // Not available yet — no route, so it renders as a static row with a
   // "Soon" badge rather than a dead link.
-  { id: 'courses', label: 'Courses', path: null, matches: [], badge: 'Soon' },
+  {
+    id: 'courses',
+    label: 'Courses',
+    path: null,
+    matches: [],
+    badge: 'Soon',
+    muted: true,
+  },
+  // Reference rather than product, so it sits muted at the bottom.
+  {
+    id: 'spec',
+    label: 'Design system',
+    path: ROUTES.spec,
+    matches: [ROUTES.spec],
+    muted: true,
+  },
 ]
 
 /** The goal screen owns exactly one path; everything else lands on the assistant. */

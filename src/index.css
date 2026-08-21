@@ -64,8 +64,8 @@
 /*
  * Colour transitions for fills only. `transition-colors` also animates
  * outline-color, which makes a focus ring fade in from currentColor — on the
- * brand-red button that means an invisible white ring for 150ms. Focus must be
- * visible the instant it lands, so outline is deliberately excluded.
+ * brand-green button that means an invisible white ring for 150ms. Focus must
+ * be visible the instant it lands, so outline is deliberately excluded.
  */
 @utility transition-fill {
   transition-property: background-color, border-color, color;
