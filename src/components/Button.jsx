@@ -6,7 +6,8 @@ const TONE = {
 
 const INTERACTION = {
   primary: 'hover:bg-brand-hover active:bg-brand-hover active:opacity-90',
-  secondary: 'hover:bg-line active:bg-line active:opacity-90',
+  secondary:
+    'hover:border-brand hover:bg-brand-soft hover:text-brand active:opacity-90',
   ghost: 'hover:bg-surface active:bg-line',
 }
 

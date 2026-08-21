@@ -1,52 +1,51 @@
 import { useState } from 'react'
 
 /*
- * Hamood's avatar, from /hamood.png. Falls back to a brand-soft circle if the
- * image is missing.
+ * Hamood's avatar, from /hamood.png.
  *
- * mark    — 32px, sidebar
- * message — 40px, conversation rows and the thinking indicator
- * hero    — 320px, welcome state
+ * mark    — 32px circle, sidebar
+ * message — 40px circle, conversation rows and the thinking indicator
+ * hero    — 400x480 block, welcome state, no circle
  *
- * The source is a full-body figure on a square canvas with only ~6% clearance
- * above the head, so a scaled crop cuts the headdress. The hero therefore
- * fits the whole figure with `contain` and padding and does not clip; the
- * small sizes scale in on the head, which needs clipping.
+ * The source is a square canvas whose figure is 33.7% wide and 85.6% tall,
+ * so most of the file is blank margin. The small sizes scale in on the head;
+ * the hero covers its taller box, which trims only that blank margin
+ * horizontally and lets the figure run close to full height.
  */
 const SIZES = {
   mark: {
-    className: 'size-8',
-    px: 32,
+    box: 'size-8',
+    w: 32,
+    h: 32,
     fit: 'object-cover object-top',
-    clip: true,
-    pad: '',
+    shape: 'rounded-full',
   },
   message: {
-    className: 'size-10',
-    px: 40,
+    box: 'size-10',
+    w: 40,
+    h: 40,
     fit: 'object-cover object-top origin-top scale-200',
-    clip: true,
-    pad: '',
+    shape: 'rounded-full',
   },
   hero: {
-    className: 'size-80',
-    px: 320,
-    fit: 'object-contain object-center',
-    clip: false,
-    pad: 'p-6',
+    box: 'h-120 w-100',
+    w: 400,
+    h: 480,
+    fit: 'object-cover object-center',
+    shape: '',
   },
 }
 
 export default function Avatar({ size = 'message', framed = false }) {
   const [failed, setFailed] = useState(false)
-  const { className, px, fit, clip, pad } = SIZES[size] ?? SIZES.message
+  const { box, w, h, fit, shape } = SIZES[size] ?? SIZES.message
   const frame = framed ? 'border border-line bg-brand-soft' : ''
 
   if (failed) {
     return (
       <span
         aria-hidden="true"
-        className={`${className} ${frame} block shrink-0 rounded-full bg-brand-soft`}
+        className={`${box} ${shape} ${frame} block shrink-0 bg-brand-soft`}
       />
     )
   }
@@ -54,15 +53,13 @@ export default function Avatar({ size = 'message', framed = false }) {
   return (
     <span
       aria-hidden="true"
-      className={`${className} ${pad} ${frame} block shrink-0 rounded-full ${
-        clip ? 'overflow-hidden' : ''
-      }`}
+      className={`${box} ${shape} ${frame} block shrink-0 overflow-hidden`}
     >
       <img
         src="/hamood.png"
         alt=""
-        width={px}
-        height={px}
+        width={w}
+        height={h}
         onError={() => setFailed(true)}
         className={`size-full ${fit}`}
       />
