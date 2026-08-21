@@ -10,7 +10,6 @@
 
 export const ACTIVE_GOAL = {
   title: 'Home down payment',
-  status: 'On track',
   currency: 'AED',
 
   saved: 15000,

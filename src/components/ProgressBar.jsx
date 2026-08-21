@@ -3,7 +3,13 @@
  * tokens. The width percentage is the only inline style — it is data, not a
  * design value.
  */
-export default function ProgressBar({ value = 0, max = 0, label }) {
+const TONE = {
+  brand: { track: 'bg-brand-soft', fill: 'bg-brand' },
+  onBrand: { track: 'bg-paper/25', fill: 'bg-paper' },
+}
+
+export default function ProgressBar({ value = 0, max = 0, label, tone = 'brand' }) {
+  const palette = TONE[tone] ?? TONE.brand
   const safeMax = max > 0 ? max : 1
   const percent = Math.min(100, Math.max(0, (value / safeMax) * 100))
 
@@ -14,9 +20,9 @@ export default function ProgressBar({ value = 0, max = 0, label }) {
       aria-valuemin={0}
       aria-valuemax={100}
       aria-label={label}
-      className="h-2 w-full overflow-hidden rounded-full bg-brand-soft"
+      className={`h-2 w-full overflow-hidden rounded-full ${palette.track}`}
     >
-      <div className="h-full rounded-full bg-brand" style={{ width: `${percent}%` }} />
+      <div className={`h-full rounded-full ${palette.fill}`} style={{ width: `${percent}%` }} />
     </div>
   )
 }

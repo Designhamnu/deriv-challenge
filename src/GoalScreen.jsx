@@ -1,4 +1,3 @@
-import Badge from './components/Badge.jsx'
 import Card from './components/Card.jsx'
 import EmptyState from './components/EmptyState.jsx'
 import ListRow from './components/ListRow.jsx'
@@ -32,9 +31,8 @@ export default function GoalScreen({
 
   return (
     <div className="flex flex-col gap-8">
-      <header className="flex flex-wrap items-center gap-4">
+      <header>
         <h1 className="text-title text-ink">{goal.title}</h1>
-        <Badge tone="neutral">{goal.status}</Badge>
       </header>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -51,20 +49,22 @@ export default function GoalScreen({
       </div>
 
       <div className="flex flex-col gap-8">
-        <Card>
+        <Card tone="brand">
           <StatBlock
             label="Saved so far"
             value={goal.saved}
             currency={goal.currency}
             size="display"
+            tone="brand"
           />
           <div className="mt-6">
             <ProgressBar
               value={goal.saved}
               max={goal.target}
               label={`${goal.title} progress`}
+              tone="onBrand"
             />
-            <p className="mt-2 text-small text-muted">{goal.targetCaption}</p>
+            <p className="mt-2 text-small text-paper/90">{goal.targetCaption}</p>
           </div>
         </Card>
 

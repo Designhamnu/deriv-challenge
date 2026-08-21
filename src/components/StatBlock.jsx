@@ -1,5 +1,10 @@
 import { formatMoneyParts } from '../lib/money.js'
 
+const TONE = {
+  ink: { label: 'text-muted', amount: 'text-ink', code: 'text-muted' },
+  brand: { label: 'text-paper/90', amount: 'text-paper', code: 'text-paper/90' },
+}
+
 const DELTA_TONE = {
   positive: 'text-positive',
   negative: 'text-negative',
@@ -14,8 +19,10 @@ export default function StatBlock({
   delta,
   deltaNote,
   size = 'display',
+  tone = 'ink',
   className = '',
 }) {
+  const palette = TONE[tone] ?? TONE.ink
   // Summary figures are not always money — "45" and "March 2030" are shown
   // verbatim, with no currency code beside them.
   const isText = typeof value === 'string'
@@ -28,13 +35,14 @@ export default function StatBlock({
 
   return (
     <div className={['flex flex-col', className].join(' ')}>
-      <span className="text-label text-muted">{label}</span>
+      <span className={`text-label ${palette.label}`}>{label}</span>
 
       <p className="mt-2 flex items-baseline gap-2">
         <span
           className={[
             size === 'display' ? 'text-display' : 'text-body',
-            'tabular-nums text-ink',
+            'tabular-nums',
+            palette.amount,
           ].join(' ')}
         >
           {isText ? value : figure.amount}
@@ -43,7 +51,8 @@ export default function StatBlock({
           <span
             className={[
               size === 'display' ? 'text-small' : 'text-label',
-              'font-medium text-muted',
+              'font-medium',
+              palette.code,
             ].join(' ')}
           >
             {figure.currency}
