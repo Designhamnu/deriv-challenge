@@ -6,21 +6,40 @@ import { useState } from 'react'
  *
  * mark    — 32px, sidebar
  * message — 40px, conversation rows and the thinking indicator
- * hero    — 360px, welcome state
+ * hero    — 320px, welcome state
  *
- * The source is a full-body figure on a square canvas, so object-cover alone
- * crops nothing. `zoom` scales the image inside the clipping circle to bring
- * the figure up.
+ * The source is a full-body figure on a square canvas with only ~6% clearance
+ * above the head, so a scaled crop cuts the headdress. The hero therefore
+ * fits the whole figure with `contain` and padding and does not clip; the
+ * small sizes scale in on the head, which needs clipping.
  */
 const SIZES = {
-  mark: { className: 'size-8', px: 32, zoom: '' },
-  message: { className: 'size-10', px: 40, zoom: 'origin-top scale-200' },
-  hero: { className: 'size-90', px: 360, zoom: 'scale-150' },
+  mark: {
+    className: 'size-8',
+    px: 32,
+    fit: 'object-cover object-top',
+    clip: true,
+    pad: '',
+  },
+  message: {
+    className: 'size-10',
+    px: 40,
+    fit: 'object-cover object-top origin-top scale-200',
+    clip: true,
+    pad: '',
+  },
+  hero: {
+    className: 'size-80',
+    px: 320,
+    fit: 'object-contain object-center',
+    clip: false,
+    pad: 'p-6',
+  },
 }
 
 export default function Avatar({ size = 'message', framed = false }) {
   const [failed, setFailed] = useState(false)
-  const { className, px, zoom } = SIZES[size] ?? SIZES.message
+  const { className, px, fit, clip, pad } = SIZES[size] ?? SIZES.message
   const frame = framed ? 'border border-line bg-brand-soft' : ''
 
   if (failed) {
@@ -35,7 +54,9 @@ export default function Avatar({ size = 'message', framed = false }) {
   return (
     <span
       aria-hidden="true"
-      className={`${className} ${frame} block shrink-0 overflow-hidden rounded-full`}
+      className={`${className} ${pad} ${frame} block shrink-0 rounded-full ${
+        clip ? 'overflow-hidden' : ''
+      }`}
     >
       <img
         src="/hamood.png"
@@ -43,7 +64,7 @@ export default function Avatar({ size = 'message', framed = false }) {
         width={px}
         height={px}
         onError={() => setFailed(true)}
-        className={`size-full object-cover object-top ${zoom}`}
+        className={`size-full ${fit}`}
       />
     </span>
   )
