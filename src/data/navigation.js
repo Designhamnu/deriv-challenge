@@ -1,4 +1,5 @@
-export const WORDMARK = 'Deriv Save'
+export const WORDMARK = 'Nawa'
+export const WORDMARK_SUFFIX = 'by Deriv'
 
 export const NAV_ITEMS = [
   { id: 'assistant', label: 'Assistant', path: '/assistant' },

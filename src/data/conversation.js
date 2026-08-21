@@ -1,43 +1,63 @@
 /*
- * Assistant screen copy.
+ * Assistant screen copy, verbatim from the build brief.
  *
- * Sources: the questions, placeholder, plan button labels and loading label
- * come from PRD section 5. The suggestion chips, error message and loading
- * behaviour come from the build brief. Two strings had no given source and
- * are derived rather than supplied — see the notes below.
+ * Two labels are not supplied by the brief and are sourced rather than
+ * invented: the welcome Field label reuses PRD section 5's "What are you
+ * saving for?", and the composer label reuses Hamood's own question from the
+ * scripted reply. CLAUDE.md section 10 forbids a placeholder standing in for
+ * a label, so both fields carry a real one.
  */
 
-export const CONVERSATION = {
-  // PRD section 5, turn 1.
-  opening: 'What are you saving for?',
-  goalPlaceholder: 'A home, a car, a wedding — anything.',
+export const WELCOME = {
+  greeting: "Assalamu alaikum, I'm Hamood",
+  tagline: 'Your AI savings coach on Nawa.',
+  chips: ['A home', 'A car', 'A wedding', 'Something else'],
+  fieldLabel: 'What are you saving for?',
+  fieldPlaceholder: 'Or tell me in your own words',
+}
 
-  // Brief: four suggestion chips.
-  suggestions: ['A home', 'A car', 'A wedding', 'An emergency fund'],
+export const THINKING_LABEL = 'Hamood is thinking'
 
-  // PRD section 5, turn 2.
-  incomeQuestion: 'What do you earn a month?',
-
-  // Brief: error state.
-  incomeError: 'Enter your monthly income as a number',
-
-  // PRD section 5, loading.
-  loading: 'Working out your numbers',
-
-  // PRD section 5, turn 3 buttons.
-  confirm: 'Yes, set it up',
-  adjust: 'Adjust the amount',
-
-  // PRD section 5 goal screen labels, reused for the proposed plan.
-  planLabels: {
-    monthly: 'Monthly contribution',
-    date: 'On track for',
-  },
-
-  // DERIVED, not supplied. CLAUDE.md section 6: "the name persists through
-  // the flow" — "Yes, set it up" produces "Goal set up".
-  success: 'Goal set up.',
-
-  // DERIVED, not supplied. No composer button label was given.
+export const COMPOSER = {
   send: 'Send',
+  label: 'What do you take home a month?',
+  placeholder: 'Monthly take-home',
+  error:
+    "That doesn't look like a number — how much do you take home each month?",
+}
+
+export const SCRIPT = {
+  currency: 'AED',
+
+  firstReply: [
+    "A home in Dubai. Good — that's the one most people put off because the number scares them.",
+    "A 2-bedroom in JVC runs about AED 1.2M. You'd need around AED 240,000 down, plus roughly AED 50,000 in fees people forget about. Call it AED 290,000. What do you take home a month?",
+  ],
+
+  planIntro: "At AED 18,000 a month, here's the real picture:",
+
+  planStats: [
+    { id: 'monthly', label: 'Monthly contribution', value: 5000 },
+    { id: 'date', label: 'On track for', value: 'March 2030' },
+  ],
+
+  planNotes: [
+    "That's 28% of your income. It's doable, but you'll feel it — no big holidays, and you'd want a separate emergency fund before you start.",
+    "If that's too tight, AED 3,500 gets you there by late 2031. Slower, but you'd still have a life.",
+  ],
+
+  actions: [
+    { id: 'start-5000', label: 'Start with 5,000', variant: 'primary', starts: true },
+    { id: 'start-3500', label: 'Start with 3,500', variant: 'secondary', starts: true },
+    { id: 'think', label: 'Let me think', variant: 'ghost', starts: false },
+  ],
+
+  confirmation:
+    "Done. First transfer goes out on the 1st, the day after payday. I'll check in each month and tell you if you're drifting.",
+}
+
+export const TIMING = {
+  firstReply: 1200,
+  plan: 1800,
+  navigate: 1200,
 }

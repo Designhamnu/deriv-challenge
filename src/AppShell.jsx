@@ -1,6 +1,6 @@
 import Avatar from './components/Avatar.jsx'
 import ListRow from './components/ListRow.jsx'
-import { NAV_ITEMS, WORDMARK } from './data/navigation.js'
+import { NAV_ITEMS, WORDMARK, WORDMARK_SUFFIX } from './data/navigation.js'
 import { navigate, usePath } from './lib/router.js'
 
 /**
@@ -16,7 +16,10 @@ export default function AppShell({ children }) {
       <header className="border-b border-line bg-paper py-6 md:fixed md:inset-y-0 md:left-0 md:w-[260px] md:overflow-y-auto md:border-r md:border-b-0 md:py-8">
         <div className="flex items-center gap-3 px-4">
           <Avatar />
-          <p className="text-heading text-brand">{WORDMARK}</p>
+          <div>
+            <p className="text-heading text-brand">{WORDMARK}</p>
+            <p className="text-label text-muted">{WORDMARK_SUFFIX}</p>
+          </div>
         </div>
 
         <nav aria-label="Main" className="mt-6">

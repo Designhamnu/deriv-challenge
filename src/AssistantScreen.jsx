@@ -4,27 +4,43 @@ import Button from './components/Button.jsx'
 import Card from './components/Card.jsx'
 import Field from './components/Field.jsx'
 import StatBlock from './components/StatBlock.jsx'
-import { CONVERSATION } from './data/conversation.js'
-import { matchGoal } from './data/goals.js'
-import { formatMonthYear, monthsFromNow } from './lib/date.js'
+import {
+  COMPOSER,
+  SCRIPT,
+  THINKING_LABEL,
+  TIMING,
+  WELCOME,
+} from './data/conversation.js'
 import { formatMoney } from './lib/money.js'
 import { navigate } from './lib/router.js'
 
-const THINKING_MS = 800
-const CONFIRM_MS = 900
+const DOT_DELAYS = [0, 150, 300]
 
-function AssistantMessage({ children }) {
+/** Three dots. The reduced-motion reset in index.css leaves them static. */
+function ThinkingDots() {
+  return (
+    <span aria-hidden="true" className="flex items-center gap-1">
+      {DOT_DELAYS.map((delay) => (
+        <span
+          key={delay}
+          className="size-2 animate-pulse rounded-full bg-muted"
+          style={{ animationDelay: `${delay}ms` }}
+        />
+      ))}
+    </span>
+  )
+}
+
+function AssistantRow({ children }) {
   return (
     <div className="flex gap-4">
       <Avatar />
-      <Card tone="surface" className="w-fit">
-        {children}
-      </Card>
+      <div className="flex w-fit flex-col gap-4">{children}</div>
     </div>
   )
 }
 
-function UserMessage({ text }) {
+function UserRow({ text }) {
   return (
     <div className="flex justify-end">
       <Card className="w-fit">
@@ -35,170 +51,211 @@ function UserMessage({ text }) {
 }
 
 export default function AssistantScreen() {
-  const [messages, setMessages] = useState([
-    { id: 'open', role: 'assistant', text: CONVERSATION.opening },
-  ])
-  const [step, setStep] = useState('goal')
-  const [goal, setGoal] = useState(null)
+  const [phase, setPhase] = useState('welcome')
+  const [messages, setMessages] = useState([])
+  const [step, setStep] = useState('idle')
   const [draft, setDraft] = useState('')
   const [error, setError] = useState('')
   const [thinking, setThinking] = useState(false)
 
   const timers = useRef([])
+  const endRef = useRef(null)
+
   useEffect(() => {
     const pending = timers.current
     return () => pending.forEach(clearTimeout)
   }, [])
 
-  const later = (fn, ms) => {
-    timers.current.push(setTimeout(fn, ms))
-  }
+  useEffect(() => {
+    if (phase !== 'chat') return
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    endRef.current?.scrollIntoView({
+      behavior: reduce ? 'auto' : 'smooth',
+      block: 'end',
+    })
+  }, [messages, thinking, phase])
 
+  const later = (fn, ms) => timers.current.push(setTimeout(fn, ms))
   const say = (message) => setMessages((prev) => [...prev, message])
 
-  const askIncome = (matched) => {
-    setGoal(matched)
-    say({
-      id: `turn2-${matched.id}-${Date.now()}`,
-      role: 'assistant',
-      text: matched.response.turn2,
-      followUp: CONVERSATION.incomeQuestion,
-    })
-    setStep('income')
-  }
-
-  const submitGoal = (answer) => {
+  const choose = (answer) => {
     const text = answer.trim()
     if (!text) return
 
-    say({ id: `user-goal-${Date.now()}`, role: 'user', text })
+    setPhase('chat')
+    setMessages([{ id: 'user-goal', role: 'user', text }])
     setDraft('')
     setThinking(true)
 
     later(() => {
       setThinking(false)
-      askIncome(matchGoal(text))
-    }, THINKING_MS)
+      SCRIPT.firstReply.forEach((line, index) =>
+        say({ id: `reply-${index}`, role: 'assistant', text: line }),
+      )
+      setStep('income')
+    }, TIMING.firstReply)
   }
 
   const submitIncome = () => {
     const income = Number(draft.trim())
 
     if (!draft.trim() || !Number.isFinite(income) || income <= 0) {
-      setError(CONVERSATION.incomeError)
+      setError(COMPOSER.error)
       return
     }
 
     setError('')
     say({
-      id: `user-income-${Date.now()}`,
+      id: `user-income-${messages.length}`,
       role: 'user',
-      text: formatMoney(income, { currency: goal.currency }),
+      text: formatMoney(income, { currency: SCRIPT.currency }),
     })
     setDraft('')
+    setStep('waiting')
     setThinking(true)
 
     later(() => {
       setThinking(false)
-      say({
-        id: `turn3-${goal.id}-${Date.now()}`,
-        role: 'assistant',
-        text: goal.response.turn3,
-        plan: {
-          monthly: goal.monthly,
-          currency: goal.currency,
-          date: formatMonthYear(monthsFromNow(goal.months)),
-        },
-      })
+      say({ id: 'plan', role: 'assistant', plan: true })
       setStep('plan')
-    }, THINKING_MS)
+    }, TIMING.plan)
   }
 
-  const confirmPlan = () => {
-    say({ id: `success-${Date.now()}`, role: 'assistant', text: CONVERSATION.success })
+  const act = (action) => {
+    if (!action.starts) {
+      setStep('dismissed')
+      return
+    }
+    say({ id: 'confirmation', role: 'assistant', text: SCRIPT.confirmation })
     setStep('done')
-    later(() => navigate('/'), CONFIRM_MS)
-  }
-
-  const adjustPlan = () => {
-    setDraft('')
-    setError('')
-    setStep('income')
+    later(() => navigate('/'), TIMING.navigate)
   }
 
   const handleSubmit = (event) => {
     event.preventDefault()
-    if (step === 'goal') submitGoal(draft)
+    if (phase === 'welcome') choose(draft)
     else if (step === 'income') submitIncome()
   }
 
-  const composerOpen = step === 'goal' || step === 'income'
-  const onGoalStep = step === 'goal'
+  if (phase === 'welcome') {
+    return (
+      <div className="flex min-h-[calc(100dvh-4rem)] items-center">
+        <div className="grid w-full gap-8 md:grid-cols-2 md:items-center">
+          <div className="flex justify-center md:justify-start">
+            <Avatar size="lg" />
+          </div>
+
+          <div className="flex flex-col">
+            <h1 className="text-title text-ink">{WELCOME.greeting}</h1>
+            <p className="mt-2 text-body text-muted">{WELCOME.tagline}</p>
+
+            <div className="mt-8 flex flex-col gap-4">
+              {WELCOME.chips.map((chip) => (
+                <Button
+                  key={chip}
+                  variant="secondary"
+                  className="w-full"
+                  onClick={() => choose(chip)}
+                >
+                  {chip}
+                </Button>
+              ))}
+            </div>
+
+            <form className="mt-8" onSubmit={handleSubmit}>
+              <Field
+                label={WELCOME.fieldLabel}
+                placeholder={WELCOME.fieldPlaceholder}
+                value={draft}
+                onChange={(event) => setDraft(event.target.value)}
+              />
+            </form>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  const composerOpen = step === 'income' || step === 'waiting'
 
   return (
     <div className="mx-auto flex min-h-[calc(100dvh-4rem)] max-w-[640px] flex-col">
-      <h1 className="text-title text-ink">Assistant</h1>
+      <h1 className="sr-only">Hamood</h1>
 
       <div
         role="log"
         aria-live="polite"
         aria-relevant="additions"
-        className="mt-8 flex flex-1 flex-col gap-6"
+        className="flex flex-1 flex-col gap-6"
       >
-        {messages.map((message) =>
-          message.role === 'user' ? (
-            <UserMessage key={message.id} text={message.text} />
-          ) : (
-            <AssistantMessage key={message.id}>
-              <p className="text-body text-ink">{message.text}</p>
+        {messages.map((message) => {
+          if (message.role === 'user') {
+            return <UserRow key={message.id} text={message.text} />
+          }
 
-              {message.followUp ? (
-                <p className="mt-4 text-body text-ink">{message.followUp}</p>
-              ) : null}
+          if (!message.plan) {
+            return (
+              <AssistantRow key={message.id}>
+                <Card tone="surface">
+                  <p className="text-body text-ink">{message.text}</p>
+                </Card>
+              </AssistantRow>
+            )
+          }
 
-              {message.plan ? (
-                <>
-                  <div className="mt-6 grid gap-4 sm:grid-cols-2">
+          return (
+            <AssistantRow key={message.id}>
+              <Card tone="surface">
+                <p className="text-body text-ink">{SCRIPT.planIntro}</p>
+
+                <div className="mt-6 grid gap-4 sm:grid-cols-2">
+                  {SCRIPT.planStats.map((stat) => (
                     <StatBlock
-                      label={CONVERSATION.planLabels.monthly}
-                      value={message.plan.monthly}
-                      currency={message.plan.currency}
+                      key={stat.id}
+                      label={stat.label}
+                      value={stat.value}
+                      currency={SCRIPT.currency}
                       size="body"
                     />
-                    <StatBlock
-                      label={CONVERSATION.planLabels.date}
-                      value={message.plan.date}
-                      size="body"
-                    />
-                  </div>
+                  ))}
+                </div>
 
-                  {step === 'plan' ? (
-                    <div className="mt-6 flex flex-wrap gap-4">
-                      <Button variant="primary" onClick={confirmPlan}>
-                        {CONVERSATION.confirm}
-                      </Button>
-                      <Button variant="secondary" onClick={adjustPlan}>
-                        {CONVERSATION.adjust}
-                      </Button>
-                    </div>
-                  ) : null}
-                </>
+                {SCRIPT.planNotes.map((note) => (
+                  <p key={note} className="mt-6 text-body text-ink">
+                    {note}
+                  </p>
+                ))}
+              </Card>
+
+              {step === 'plan' ? (
+                <div className="flex flex-wrap gap-4">
+                  {SCRIPT.actions.map((action) => (
+                    <Button
+                      key={action.id}
+                      variant={action.variant}
+                      onClick={() => act(action)}
+                    >
+                      {action.label}
+                    </Button>
+                  ))}
+                </div>
               ) : null}
-            </AssistantMessage>
-          ),
-        )}
+            </AssistantRow>
+          )
+        })}
 
         {thinking ? (
-          <AssistantMessage>
-            <p className="flex items-center gap-2 text-small text-muted">
-              <span
-                aria-hidden="true"
-                className="size-4 shrink-0 animate-spin rounded-full border-2 border-current border-t-transparent"
-              />
-              {CONVERSATION.loading}
-            </p>
-          </AssistantMessage>
+          <AssistantRow>
+            <Card tone="surface">
+              <p className="flex items-center gap-2 text-small text-muted">
+                {THINKING_LABEL}
+                <ThinkingDots />
+              </p>
+            </Card>
+          </AssistantRow>
         ) : null}
+
+        <div ref={endRef} />
       </div>
 
       {composerOpen ? (
@@ -206,35 +263,21 @@ export default function AssistantScreen() {
           <form onSubmit={handleSubmit} className="flex items-end gap-4">
             <Field
               className="flex-1"
-              label={onGoalStep ? CONVERSATION.opening : CONVERSATION.incomeQuestion}
-              type={onGoalStep ? 'text' : 'number'}
-              placeholder={onGoalStep ? CONVERSATION.goalPlaceholder : undefined}
+              label={COMPOSER.label}
+              type="number"
+              placeholder={COMPOSER.placeholder}
               value={draft}
-              error={onGoalStep ? undefined : error || undefined}
+              error={error || undefined}
+              disabled={thinking}
               onChange={(event) => {
                 setDraft(event.target.value)
                 if (error) setError('')
               }}
             />
             <Button type="submit" variant="primary" disabled={thinking}>
-              {CONVERSATION.send}
+              {COMPOSER.send}
             </Button>
           </form>
-
-          {onGoalStep ? (
-            <div className="mt-4 flex flex-wrap gap-2">
-              {CONVERSATION.suggestions.map((suggestion) => (
-                <Button
-                  key={suggestion}
-                  variant="secondary"
-                  disabled={thinking}
-                  onClick={() => submitGoal(suggestion)}
-                >
-                  {suggestion}
-                </Button>
-              ))}
-            </div>
-          ) : null}
         </div>
       ) : null}
     </div>
