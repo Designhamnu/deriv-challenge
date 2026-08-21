@@ -20,6 +20,7 @@ export default function StatBlock({
   deltaNote,
   size = 'display',
   tone = 'ink',
+  icon,
   className = '',
 }) {
   const palette = TONE[tone] ?? TONE.ink
@@ -35,6 +36,9 @@ export default function StatBlock({
 
   return (
     <div className={['flex flex-col', className].join(' ')}>
+      {icon ? (
+        <span className={`mb-2 block ${palette.label}`}>{icon}</span>
+      ) : null}
       <span className={`text-label ${palette.label}`}>{label}</span>
 
       <p className="mt-2 flex items-baseline gap-2">

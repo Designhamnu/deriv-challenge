@@ -1,5 +1,6 @@
 import Card from './components/Card.jsx'
 import EmptyState from './components/EmptyState.jsx'
+import Icon from './components/Icon.jsx'
 import ListRow from './components/ListRow.jsx'
 import ProgressBar from './components/ProgressBar.jsx'
 import StatBlock from './components/StatBlock.jsx'
@@ -9,6 +10,13 @@ import {
   EMPTY_GOAL,
   RECENT_CONTRIBUTIONS,
 } from './data/activeGoal.js'
+
+const SUMMARY_ICONS = {
+  monthly: 'wallet',
+  remaining: 'clock',
+  date: 'calendar',
+  streak: 'flame',
+}
 
 /**
  * Pass `goal={null}` to take the empty rendering path.
@@ -43,6 +51,7 @@ export default function GoalScreen({
               value={item.value}
               currency={goal.currency}
               size="body"
+              icon={<Icon name={SUMMARY_ICONS[item.id]} />}
             />
           </Card>
         ))}
