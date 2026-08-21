@@ -15,6 +15,7 @@ export default function ListRow({
   signed = true,
   badge,
   active = false,
+  muted = false,
   onClick,
   className = '',
 }) {
@@ -34,7 +35,7 @@ export default function ListRow({
           <span
             className={[
               'truncate text-body',
-              active ? 'text-brand' : 'text-ink',
+              active ? 'text-brand' : muted ? 'text-muted' : 'text-ink',
             ].join(' ')}
           >
             {label}

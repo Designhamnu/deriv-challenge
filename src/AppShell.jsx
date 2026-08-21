@@ -1,4 +1,5 @@
 import Avatar from './components/Avatar.jsx'
+import Badge from './components/Badge.jsx'
 import ListRow from './components/ListRow.jsx'
 import { NAV_ITEMS, WORDMARK } from './data/navigation.js'
 import { navigate, usePath } from './lib/router.js'
@@ -25,6 +26,10 @@ export default function AppShell({ children }) {
               key={item.id}
               label={item.label}
               active={item.matches.includes(path)}
+              muted={!item.path}
+              badge={
+                item.badge ? <Badge tone="neutral">{item.badge}</Badge> : undefined
+              }
               onClick={item.path ? () => navigate(item.path) : undefined}
             />
           ))}
