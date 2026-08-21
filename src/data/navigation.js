@@ -26,14 +26,6 @@ export const NAV_ITEMS = [
     badge: 'Soon',
     muted: true,
   },
-  // Reference rather than product, so it sits muted at the bottom.
-  {
-    id: 'spec',
-    label: 'Design system',
-    path: ROUTES.spec,
-    matches: [ROUTES.spec],
-    muted: true,
-  },
 ]
 
 /** The goal screen owns exactly one path; everything else lands on the assistant. */
