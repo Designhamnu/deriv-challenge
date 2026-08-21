@@ -8,7 +8,7 @@ import { navigate, usePath } from './lib/router.js'
  * the content. Nav items are ListRows — the active one takes a brand-soft
  * fill and brand text.
  */
-export default function AppShell({ background = 'paper', children }) {
+export default function AppShell({ children }) {
   const path = usePath()
 
   return (
@@ -27,19 +27,14 @@ export default function AppShell({ background = 'paper', children }) {
             <ListRow
               key={item.id}
               label={item.label}
-              active={item.path === path}
+              active={item.matches.includes(path)}
               onClick={item.path ? () => navigate(item.path) : undefined}
             />
           ))}
         </nav>
       </header>
 
-      <main
-        className={[
-          'min-h-screen md:ml-[260px]',
-          background === 'brand-soft' ? 'bg-brand-soft' : 'bg-paper',
-        ].join(' ')}
-      >
+      <main className="min-h-screen bg-paper md:ml-[260px]">
         <div className="mx-auto max-w-[960px] p-4 sm:p-8">{children}</div>
       </main>
     </div>

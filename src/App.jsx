@@ -1,6 +1,7 @@
 import AppShell from './AppShell.jsx'
 import AssistantScreen from './AssistantScreen.jsx'
 import GoalScreen from './GoalScreen.jsx'
+import { isGoalsPath } from './data/navigation.js'
 import { usePath } from './lib/router.js'
 
 /**
@@ -11,8 +12,8 @@ export default function App() {
   const path = usePath()
 
   return (
-    <AppShell background={path === '/assistant' ? 'brand-soft' : 'paper'}>
-      {path === '/assistant' ? <AssistantScreen /> : <GoalScreen />}
+    <AppShell>
+      {isGoalsPath(path) ? <GoalScreen /> : <AssistantScreen />}
     </AppShell>
   )
 }

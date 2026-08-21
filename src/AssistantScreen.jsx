@@ -12,6 +12,7 @@ import {
   WELCOME,
 } from './data/conversation.js'
 import { formatMoney } from './lib/money.js'
+import { ROUTES } from './data/navigation.js'
 import { navigate } from './lib/router.js'
 
 const DOT_DELAYS = [0, 150, 300]
@@ -140,7 +141,7 @@ export default function AssistantScreen() {
     }
     say({ id: 'confirmation', role: 'assistant', text: SCRIPT.confirmation })
     setStep('done')
-    later(() => navigate('/'), TIMING.navigate)
+    later(() => navigate(ROUTES.goals), TIMING.navigate)
   }
 
   const handleSubmit = (event) => {

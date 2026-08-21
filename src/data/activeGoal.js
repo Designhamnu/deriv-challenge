@@ -25,13 +25,6 @@ export const ACTIVE_GOAL = {
   ],
 
   contributionsHeading: 'Recent contributions',
-
-  nextStep: {
-    heading: 'Your next step',
-    nudge:
-      "You're three months in and on schedule. Adding AED 800 a month would bring your target forward by eight months.",
-    action: 'Adjust my plan',
-  },
 }
 
 /*

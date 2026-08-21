@@ -123,8 +123,10 @@ This is the single cheapest craft signal in a trading UI and MT5 currently gets 
 - Between major sections: 32px. Inside a card: 16px or 24px.
 - Radius: **8px** controls and inputs, **16px** cards and banners, **full** pills and badges.
   Three values, no others. Deriv uses generous radii — match that.
-- **Borders and surface fills for separation, not shadows.** One shadow token exists for
-  genuinely floating elements only (dropdown, modal): `0 4px 16px rgba(14,14,14,0.08)`.
+- **Borders carry separation; shadows only lift.** Cards keep their 1px line border and add
+  `--shadow-card` (`0 1px 3px rgba(14,14,14,0.06)`) — enough to lift off the page, not enough to
+  read as a drop shadow. A second token, `--shadow-float` (`0 4px 16px rgba(14,14,14,0.08)`), is
+  for genuinely floating elements only (dropdown, modal). No other shadows.
 - Left-align by default. Centre only for empty states.
 
 ---
@@ -208,7 +210,7 @@ open/close. No entrance animations, scroll reveals, staggered lists or parallax.
 - Brand red on anything that isn't a primary button or the logo.
 - The same colour for "sell" and for a call-to-action.
 - Purple or indigo. Gradient buttons. Glassmorphism. Blurred backdrops.
-- Drop shadows on cards.
+- Shadows heavier than `--shadow-card` on a card, or a card without its 1px line border.
 - **Attempting to reproduce Deriv's 3D rendered illustrations.** Not achievable in the time and
   a half-convincing version is worse than none. Let type and space carry the page, or use simple
   line icons.

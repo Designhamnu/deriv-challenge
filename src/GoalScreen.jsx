@@ -1,5 +1,4 @@
 import Badge from './components/Badge.jsx'
-import Button from './components/Button.jsx'
 import Card from './components/Card.jsx'
 import EmptyState from './components/EmptyState.jsx'
 import ListRow from './components/ListRow.jsx'
@@ -51,51 +50,39 @@ export default function GoalScreen({
         ))}
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-3">
-        <div className="flex flex-col gap-8 lg:col-span-2">
-          <Card>
-            <StatBlock
-              label="Saved so far"
+      <div className="flex flex-col gap-8">
+        <Card>
+          <StatBlock
+            label="Saved so far"
+            value={goal.saved}
+            currency={goal.currency}
+            size="display"
+          />
+          <div className="mt-6">
+            <ProgressBar
               value={goal.saved}
-              currency={goal.currency}
-              size="display"
+              max={goal.target}
+              label={`${goal.title} progress`}
             />
-            <div className="mt-6">
-              <ProgressBar
-                value={goal.saved}
-                max={goal.target}
-                label={`${goal.title} progress`}
+            <p className="mt-2 text-small text-muted">{goal.targetCaption}</p>
+          </div>
+        </Card>
+
+        <section>
+          <h2 className="text-heading text-ink">{goal.contributionsHeading}</h2>
+          <div className="mt-4 overflow-hidden rounded-card border border-line shadow-card">
+            {contributions.map((entry) => (
+              <ListRow
+                key={entry.id}
+                label={formatMonth(entry.date)}
+                secondary={formatDate(entry.date)}
+                value={entry.amount}
+                currency={goal.currency}
+                signed={false}
               />
-              <p className="mt-2 text-small text-muted">{goal.targetCaption}</p>
-            </div>
-          </Card>
-
-          <section>
-            <h2 className="text-heading text-ink">{goal.contributionsHeading}</h2>
-            <div className="mt-4 overflow-hidden rounded-card border border-line">
-              {contributions.map((entry) => (
-                <ListRow
-                  key={entry.id}
-                  label={formatMonth(entry.date)}
-                  secondary={formatDate(entry.date)}
-                  value={entry.amount}
-                  currency={goal.currency}
-                  signed={false}
-                />
-              ))}
-            </div>
-          </section>
-        </div>
-
-        <aside>
-          <Card tone="brand">
-            <h2 className="text-heading">{goal.nextStep.heading}</h2>
-            <p className="mt-2 text-small">{goal.nextStep.nudge}</p>
-            <div className="mt-6">
-              <Button variant="secondary">{goal.nextStep.action}</Button>
-            </div>
-          </Card>
-        </aside>
+            ))}
+          </div>
+        </section>
       </div>
     </div>
   )

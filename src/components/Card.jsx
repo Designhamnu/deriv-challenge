@@ -13,7 +13,7 @@ export default function Card({
   return (
     <div
       className={[
-        'rounded-card border p-6',
+        'rounded-card border p-6 shadow-card',
         FILL[tone] ?? FILL.paper,
         className,
       ].join(' ')}

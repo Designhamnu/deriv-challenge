@@ -53,7 +53,8 @@
   --radius-control: 8px;
   --radius-card: 16px;
 
-  /* The one shadow token — floating elements only -------------------------- */
+  /* Shadows ---------------------------------------------------------------- */
+  --shadow-card: 0 1px 3px rgba(14, 14, 14, 0.06);
   --shadow-float: 0 4px 16px rgba(14, 14, 14, 0.08);
 
   /* Page container -------------------------------------------------------- */
