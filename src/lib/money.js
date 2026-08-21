@@ -75,3 +75,17 @@ export function formatMoney(value, options = {}) {
   const { amount, currency } = formatMoneyParts(value, options)
   return `${amount} ${currency}`
 }
+
+/**
+ * Grouped number with no currency code — for copy that names an amount
+ * without repeating the currency, e.g. "Start with 5,000". Still Intl, so the
+ * separators match every other figure.
+ */
+export function formatAmount(value, options = {}) {
+  const { decimals = 0, locale = DEFAULT_LOCALE } = options
+  if (!Number.isFinite(value)) return '—'
+  return new Intl.NumberFormat(locale, {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  }).format(value)
+}

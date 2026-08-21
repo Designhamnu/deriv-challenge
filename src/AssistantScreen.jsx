@@ -12,10 +12,16 @@ import {
   TIMING,
   WELCOME,
 } from './data/conversation.js'
-import { formatMoney } from './lib/money.js'
-import { monthlyContribution } from './lib/plan.js'
+import { formatAmount, formatMoney } from './lib/money.js'
+import {
+  monthlyContribution,
+  monthsToTarget,
+  shareOfIncome,
+  slowerContribution,
+} from './lib/plan.js'
 import { matchGoal } from './data/goals.js'
 import { ROUTES } from './data/navigation.js'
+import { formatMonthYear, monthsFromNow } from './lib/date.js'
 import { navigate } from './lib/router.js'
 import { setSelectedGoalId } from './lib/store.js'
 
@@ -137,10 +143,24 @@ export default function AssistantScreen() {
 
     later(() => {
       setThinking(false)
+      const faster = monthlyContribution(income)
+      const slower = slowerContribution(income)
+
       say({
         id: 'plan',
         role: 'assistant',
-        plan: { income, monthly: monthlyContribution(income) },
+        plan: {
+          income,
+          faster,
+          slower,
+          share: shareOfIncome(faster, income),
+          fasterDate: formatMonthYear(
+            monthsFromNow(monthsToTarget(goal.target, faster)),
+          ),
+          slowerDate: formatMonthYear(
+            monthsFromNow(monthsToTarget(goal.target, slower)),
+          ),
+        },
       })
       setStep('plan')
     }, TIMING.plan)
@@ -268,18 +288,25 @@ export default function AssistantScreen() {
                 <div className="mt-6 grid gap-4 sm:grid-cols-2">
                   <StatBlock
                     label={SCRIPT.planLabels.monthly}
-                    value={message.plan.monthly}
+                    value={message.plan.faster}
                     currency={SCRIPT.currency}
                     size="body"
                   />
                   <StatBlock
                     label={SCRIPT.planLabels.date}
-                    value={SCRIPT.planDate}
+                    value={message.plan.fasterDate}
                     size="body"
                   />
                 </div>
 
-                {SCRIPT.planNotes.map((note) => (
+                {SCRIPT.planNotes({
+                  share: message.plan.share,
+                  slower: formatMoney(message.plan.slower, {
+                    currency: SCRIPT.currency,
+                    decimals: 0,
+                  }),
+                  slowerDate: message.plan.slowerDate,
+                }).map((note) => (
                   <p key={note} className="mt-6 text-body text-ink">
                     {note}
                   </p>
@@ -288,7 +315,10 @@ export default function AssistantScreen() {
 
               {step === 'plan' ? (
                 <div className="flex flex-wrap gap-4">
-                  {SCRIPT.actions.map((action) => (
+                  {SCRIPT.actions({
+                    faster: formatAmount(message.plan.faster),
+                    slower: formatAmount(message.plan.slower),
+                  }).map((action) => (
                     <Button
                       key={action.id}
                       variant={action.variant}

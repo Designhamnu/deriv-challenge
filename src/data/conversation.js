@@ -49,16 +49,16 @@ export const SCRIPT = {
     date: 'On track for',
   },
 
-  planDate: 'March 2030',
-
-  planNotes: [
-    "That's 28% of your income. It's doable, but you'll feel it — no big holidays, and you'd want a separate emergency fund before you start.",
-    "If that's too tight, AED 3,500 gets you there by late 2031. Slower, but you'd still have a life.",
+  // Copy as written in the brief, with the figures substituted from the
+  // selected goal's target and the entered income.
+  planNotes: ({ share, slower, slowerDate }) => [
+    `That's ${share}% of your income. It's doable, but you'll feel it — no big holidays, and you'd want a separate emergency fund before you start.`,
+    `If that's too tight, ${slower} gets you there by ${slowerDate}. Slower, but you'd still have a life.`,
   ],
 
-  actions: [
-    { id: 'start-5000', label: 'Start with 5,000', variant: 'secondary', starts: true },
-    { id: 'start-3500', label: 'Start with 3,500', variant: 'secondary', starts: true },
+  actions: ({ faster, slower }) => [
+    { id: 'start-faster', label: `Start with ${faster}`, variant: 'secondary', starts: true },
+    { id: 'start-slower', label: `Start with ${slower}`, variant: 'secondary', starts: true },
     { id: 'think', label: 'Let me think', variant: 'ghost', starts: false },
   ],
 
