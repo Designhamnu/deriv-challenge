@@ -15,7 +15,7 @@ export default function AppShell({ children }) {
     <div className="min-h-screen bg-paper">
       <header className="border-b border-line bg-paper py-6 md:fixed md:inset-y-0 md:left-0 md:w-[260px] md:overflow-y-auto md:border-r md:border-b-0 md:py-8">
         <div className="flex items-center gap-3 px-4">
-          <Avatar />
+          <Avatar size="mark" />
           <div>
             <p className="text-heading text-brand">{WORDMARK}</p>
             <p className="text-label text-muted">{WORDMARK_SUFFIX}</p>

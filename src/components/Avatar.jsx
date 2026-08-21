@@ -1,17 +1,22 @@
 import { useState } from 'react'
 
 /*
- * Hamood's avatar. Falls back to a brand-soft circle when the image is
- * missing, which is currently the case — /hamood.png is not in public/.
+ * Hamood's avatar, from /hamood.png. Falls back to a brand-soft circle if the
+ * image is missing.
+ *
+ * mark    — 32px, sidebar
+ * message — 40px, conversation rows and the thinking indicator
+ * hero    — 280px, welcome state
  */
 const SIZES = {
-  sm: { className: 'size-10', px: 40 },
-  lg: { className: 'size-70', px: 280 },
+  mark: { className: 'size-8', px: 32 },
+  message: { className: 'size-10', px: 40 },
+  hero: { className: 'size-70', px: 280 },
 }
 
-export default function Avatar({ size = 'sm' }) {
+export default function Avatar({ size = 'message' }) {
   const [failed, setFailed] = useState(false)
-  const { className, px } = SIZES[size] ?? SIZES.sm
+  const { className, px } = SIZES[size] ?? SIZES.message
 
   if (failed) {
     return (

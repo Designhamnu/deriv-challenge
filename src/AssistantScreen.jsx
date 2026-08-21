@@ -142,7 +142,7 @@ export default function AssistantScreen() {
       <div className="flex min-h-[calc(100dvh-4rem)] items-center">
         <div className="grid w-full gap-8 md:grid-cols-2 md:items-center">
           <div className="flex justify-center md:justify-start">
-            <Avatar size="lg" />
+            <Avatar size="hero" />
           </div>
 
           <div className="flex flex-col">
