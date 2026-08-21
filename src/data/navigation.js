@@ -1,5 +1,4 @@
 export const WORDMARK = 'Nawa'
-export const WORDMARK_SUFFIX = 'by Deriv'
 
 export const ROUTES = {
   assistant: '/',

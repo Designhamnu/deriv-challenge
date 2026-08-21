@@ -36,12 +36,15 @@ export const SCRIPT = {
     "A 2-bedroom in JVC runs about AED 1.2M. You'd need around AED 240,000 down, plus roughly AED 50,000 in fees people forget about. Call it AED 290,000. What do you take home a month?",
   ],
 
-  planIntro: "At AED 18,000 a month, here's the real picture:",
+  // The income is echoed back, so this reads from what was actually entered.
+  planIntro: (income) => `At ${income} a month, here's the real picture:`,
 
-  planStats: [
-    { id: 'monthly', label: 'Monthly contribution', value: 5000 },
-    { id: 'date', label: 'On track for', value: 'March 2030' },
-  ],
+  planLabels: {
+    monthly: 'Monthly contribution',
+    date: 'On track for',
+  },
+
+  planDate: 'March 2030',
 
   planNotes: [
     "That's 28% of your income. It's doable, but you'll feel it — no big holidays, and you'd want a separate emergency fund before you start.",
@@ -54,12 +57,15 @@ export const SCRIPT = {
     { id: 'think', label: 'Let me think', variant: 'ghost', starts: false },
   ],
 
-  confirmation:
-    "Done. First transfer goes out on the 1st, the day after payday. I'll check in each month and tell you if you're drifting.",
+  // Split around the inline link to the goal screen.
+  confirmation: {
+    lead: "Done. First transfer goes out on the 1st, the day after payday. I'll check in each month and tell you if you're drifting. You can see your plan any time in ",
+    link: 'My savings',
+    tail: '.',
+  },
 }
 
 export const TIMING = {
   firstReply: 1200,
   plan: 1800,
-  navigate: 1200,
 }

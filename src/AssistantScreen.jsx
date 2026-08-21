@@ -12,6 +12,7 @@ import {
   WELCOME,
 } from './data/conversation.js'
 import { formatMoney } from './lib/money.js'
+import { monthlyContribution } from './lib/plan.js'
 import { ROUTES } from './data/navigation.js'
 import { navigate } from './lib/router.js'
 
@@ -129,7 +130,11 @@ export default function AssistantScreen() {
 
     later(() => {
       setThinking(false)
-      say({ id: 'plan', role: 'assistant', plan: true })
+      say({
+        id: 'plan',
+        role: 'assistant',
+        plan: { income, monthly: monthlyContribution(income) },
+      })
       setStep('plan')
     }, TIMING.plan)
   }
@@ -139,9 +144,8 @@ export default function AssistantScreen() {
       setStep('dismissed')
       return
     }
-    say({ id: 'confirmation', role: 'assistant', text: SCRIPT.confirmation })
+    say({ id: 'confirmation', role: 'assistant', confirmation: true })
     setStep('done')
-    later(() => navigate(ROUTES.goals), TIMING.navigate)
   }
 
   const handleSubmit = (event) => {
@@ -208,6 +212,29 @@ export default function AssistantScreen() {
             return <UserRow key={message.id} text={message.text} spacing={spacing} />
           }
 
+          if (message.confirmation) {
+            return (
+              <AssistantRow key={message.id} spacing={spacing}>
+                <Card>
+                  <p className="text-body text-ink">
+                    {SCRIPT.confirmation.lead}
+                    <a
+                      href={ROUTES.goals}
+                      onClick={(event) => {
+                        event.preventDefault()
+                        navigate(ROUTES.goals)
+                      }}
+                      className="text-brand underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+                    >
+                      {SCRIPT.confirmation.link}
+                    </a>
+                    {SCRIPT.confirmation.tail}
+                  </p>
+                </Card>
+              </AssistantRow>
+            )
+          }
+
           if (!message.plan) {
             return (
               <AssistantRow key={message.id} spacing={spacing}>
@@ -221,18 +248,27 @@ export default function AssistantScreen() {
           return (
             <AssistantRow key={message.id} spacing={spacing}>
               <Card>
-                <p className="text-body text-ink">{SCRIPT.planIntro}</p>
+                <p className="text-body text-ink">
+                  {SCRIPT.planIntro(
+                    formatMoney(message.plan.income, {
+                      currency: SCRIPT.currency,
+                      decimals: 0,
+                    }),
+                  )}
+                </p>
 
                 <div className="mt-6 grid gap-4 sm:grid-cols-2">
-                  {SCRIPT.planStats.map((stat) => (
-                    <StatBlock
-                      key={stat.id}
-                      label={stat.label}
-                      value={stat.value}
-                      currency={SCRIPT.currency}
-                      size="body"
-                    />
-                  ))}
+                  <StatBlock
+                    label={SCRIPT.planLabels.monthly}
+                    value={message.plan.monthly}
+                    currency={SCRIPT.currency}
+                    size="body"
+                  />
+                  <StatBlock
+                    label={SCRIPT.planLabels.date}
+                    value={SCRIPT.planDate}
+                    size="body"
+                  />
                 </div>
 
                 {SCRIPT.planNotes.map((note) => (
@@ -280,7 +316,7 @@ export default function AssistantScreen() {
               className="flex-1"
               label={COMPOSER.label}
               labelHidden
-              type="number"
+              type="text"
               placeholder={COMPOSER.placeholder}
               value={draft}
               error={error || undefined}
