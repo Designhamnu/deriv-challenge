@@ -4,6 +4,7 @@ import Card from './components/Card.jsx'
 import EmptyState from './components/EmptyState.jsx'
 import Field from './components/Field.jsx'
 import ListRow from './components/ListRow.jsx'
+import ProgressBar from './components/ProgressBar.jsx'
 import StatBlock from './components/StatBlock.jsx'
 
 /** Section wrapper — layout only, local to this page. */
@@ -27,18 +28,11 @@ function Spec({ label, children, className = '' }) {
   )
 }
 
-const OPEN_POSITIONS = [
-  { label: 'Volatility 75 Index', secondary: 'Buy · 0.50 lots', value: 248.6 },
-  { label: 'EUR/USD', secondary: 'Sell · 1.00 lot', value: -82.15 },
-  { label: 'BTC/USD', secondary: 'Buy · 0.02 lots', value: 1204.88 },
-  { label: 'Gold/USD', secondary: 'Sell · 0.30 lots', value: -15.4 },
-  { label: 'Boom 1000 Index', secondary: 'Buy · 1.00 lot', value: 0 },
-]
-
-const ACCOUNTS = [
-  { label: 'MT5 Financial', secondary: 'Real · USD', value: 10000 },
-  { label: 'MT5 Standard', secondary: 'Demo · USD', value: 50000 },
-  { label: 'Deriv Apps', secondary: 'Real · AED', value: 3672.4, currency: 'AED' },
+const CONTRIBUTIONS = [
+  { month: 'June', date: '1 June 2026', amount: 5000 },
+  { month: 'May', date: '1 May 2026', amount: 5000 },
+  { month: 'April', date: '1 April 2026', amount: 5000 },
+  { month: 'March', date: '1 March 2026', amount: 5000 },
 ]
 
 export default function SpecSheet() {
@@ -46,12 +40,13 @@ export default function SpecSheet() {
     <div className="min-h-screen bg-paper">
       <div className="mx-auto max-w-page px-4 py-12 sm:px-6">
         <header>
-          <p className="text-label text-muted">Deriv challenge</p>
+          <p className="text-label text-muted">Nawa</p>
           <h1 className="mt-2 text-title text-ink">Component spec sheet</h1>
           <p className="mt-4 max-w-2xl text-body text-muted">
-            Every component in every state. Hover, tab and click through — hover,
-            focus and active states are live rather than simulated, so keyboard
-            focus rings are visible by tabbing.
+            Every component in every state, as the savings product uses them.
+            Hover, tab and click through — hover, focus and active states are
+            live rather than simulated, so keyboard focus rings are visible by
+            tabbing.
           </p>
         </header>
 
@@ -63,8 +58,8 @@ export default function SpecSheet() {
           <div className="flex flex-col gap-6">
             <Spec label="Default">
               <div className="flex flex-wrap items-center gap-4">
-                <Button variant="primary">Place order</Button>
-                <Button variant="secondary">Edit order</Button>
+                <Button variant="primary">Start with 5,000</Button>
+                <Button variant="secondary">Adjust my plan</Button>
                 <Button variant="ghost">Cancel</Button>
               </div>
             </Spec>
@@ -72,10 +67,10 @@ export default function SpecSheet() {
             <Spec label="Disabled">
               <div className="flex flex-wrap items-center gap-4">
                 <Button variant="primary" disabled>
-                  Place order
+                  Start with 5,000
                 </Button>
                 <Button variant="secondary" disabled>
-                  Edit order
+                  Adjust my plan
                 </Button>
                 <Button variant="ghost" disabled>
                   Cancel
@@ -86,7 +81,7 @@ export default function SpecSheet() {
             <Spec label="Loading">
               <div className="flex flex-wrap items-center gap-4">
                 <Button variant="primary" loading>
-                  Placing order
+                  Setting up your plan
                 </Button>
                 <Button variant="secondary" loading>
                   Saving
@@ -102,12 +97,12 @@ export default function SpecSheet() {
         {/* Card ------------------------------------------------------------ */}
         <Section
           title="Card"
-          note="1px line border, 16px radius, 24px padding. Separation comes from the border and fill — no shadow."
+          note="1px line border, 16px radius, 24px padding, and the card shadow token so it lifts off the page."
         >
           <div className="grid gap-4 sm:grid-cols-2">
             <Spec label="Paper fill">
               <Card>
-                <h3 className="text-heading text-ink">Account summary</h3>
+                <h3 className="text-heading text-ink">Savings plan</h3>
                 <p className="mt-2 text-small text-muted">
                   Sits directly on the page background, held by its border.
                 </p>
@@ -116,7 +111,7 @@ export default function SpecSheet() {
 
             <Spec label="Surface fill">
               <Card tone="surface">
-                <h3 className="text-heading text-ink">Margin details</h3>
+                <h3 className="text-heading text-ink">Contribution history</h3>
                 <p className="mt-2 text-small text-muted">
                   Reads as recessed. Use when a panel sits inside another surface.
                 </p>
@@ -132,22 +127,22 @@ export default function SpecSheet() {
         >
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             <Spec label="Default">
-              <Field label="Order amount" placeholder="0.00" defaultValue="" />
+              <Field label="Monthly take-home" defaultValue="" />
             </Spec>
 
             <Spec label="With helper">
               <Field
-                label="Order amount"
-                defaultValue="250.00"
-                helper="Free margin available: 9,999.98 AED"
+                label="Monthly take-home"
+                defaultValue="18,000"
+                helper="We'll work out what you can put aside"
               />
             </Spec>
 
             <Spec label="Error">
               <Field
-                label="Order amount"
-                defaultValue="12,400.00"
-                error="Amount exceeds your free margin of 9,999.98 AED"
+                label="Monthly take-home"
+                defaultValue="eighteen thousand"
+                error="That doesn't look like a number — how much do you take home each month?"
               />
             </Spec>
 
@@ -168,9 +163,9 @@ export default function SpecSheet() {
           note="Pill, 12px label type, low-opacity tonal fill. Direction colours only — brand green never appears on a status indicator."
         >
           <div className="flex flex-wrap items-center gap-4">
-            <Badge tone="neutral">Pending</Badge>
-            <Badge tone="positive">Filled</Badge>
-            <Badge tone="negative">Rejected</Badge>
+            <Badge tone="neutral">On track</Badge>
+            <Badge tone="positive">Ahead</Badge>
+            <Badge tone="negative">Behind</Badge>
           </div>
         </Section>
 
@@ -182,41 +177,74 @@ export default function SpecSheet() {
           <div className="flex flex-col gap-6">
             <Spec label="Display — primary figure, once per screen">
               <Card>
-                <StatBlock
-                  label="Total balance"
-                  value={10000}
-                  currency="AED"
-                  delta={248.6}
-                  deltaNote="today"
-                />
+                <StatBlock label="Saved so far" value={15000} currency="AED" />
               </Card>
             </Spec>
 
-            <Spec label="Body size — positive delta, negative delta, no delta">
+            <Spec label="Body size — money and plain figures side by side">
               <Card>
                 <div className="grid gap-6 sm:grid-cols-3">
                   <StatBlock
-                    label="Open profit"
-                    value={1355.93}
+                    label="Monthly contribution"
+                    value={5000}
+                    currency="AED"
                     size="body"
-                    delta={248.6}
-                    deltaNote="today"
                   />
-                  <StatBlock
-                    label="Free margin"
-                    value={9999.98}
-                    size="body"
-                    delta={-82.15}
-                    deltaNote="today"
+                  <StatBlock label="Months remaining" value="45" size="body" />
+                  <StatBlock label="Saving streak" value="3 months" size="body" />
+                </div>
+              </Card>
+            </Spec>
+          </div>
+        </Section>
+
+        {/* ProgressBar ----------------------------------------------------- */}
+        <Section
+          title="ProgressBar"
+          note="Progress toward a target. Brand fill on a brand-soft track; on a brand-filled card it flips to white on a white-at-25% track."
+        >
+          <div className="grid gap-6 lg:grid-cols-2">
+            <Spec label="Default — on paper">
+              <Card>
+                <StatBlock
+                  label="Saved so far"
+                  value={15000}
+                  currency="AED"
+                  size="body"
+                />
+                <div className="mt-6">
+                  <ProgressBar
+                    value={15000}
+                    max={240000}
+                    label="Home down payment progress"
                   />
-                  <StatBlock label="Equity" value={11355.93} size="body" />
+                  <p className="mt-2 text-small text-muted">
+                    of 240,000 AED target
+                  </p>
                 </div>
               </Card>
             </Spec>
 
-            <Spec label="Crypto precision — 5 decimals, not 2">
-              <Card>
-                <StatBlock label="Wallet balance" value={0.0512345} currency="BTC" size="body" />
+            <Spec label="On a brand fill">
+              <Card tone="brand">
+                <StatBlock
+                  label="Saved so far"
+                  value={15000}
+                  currency="AED"
+                  size="body"
+                  tone="brand"
+                />
+                <div className="mt-6">
+                  <ProgressBar
+                    value={15000}
+                    max={240000}
+                    label="Home down payment progress"
+                    tone="onBrand"
+                  />
+                  <p className="mt-2 text-small text-paper/90">
+                    of 240,000 AED target
+                  </p>
+                </div>
               </Card>
             </Spec>
           </div>
@@ -228,36 +256,36 @@ export default function SpecSheet() {
           note="Rows are separated by a hairline, not by gaps. Amounts are tabular so the decimal points line up down the column."
         >
           <div className="grid gap-6 lg:grid-cols-2">
-            <Spec label="Directional — signed and coloured, clickable">
-              <div className="overflow-hidden rounded-card border border-line">
-                {OPEN_POSITIONS.map((row) => (
+            <Spec label="Clickable — pointer cursor and hover fill">
+              <div className="overflow-hidden rounded-card border border-line shadow-card">
+                {CONTRIBUTIONS.map((row) => (
                   <ListRow
-                    key={row.label}
-                    label={row.label}
-                    secondary={row.secondary}
-                    value={row.value}
+                    key={row.month}
+                    label={row.month}
+                    secondary={row.date}
+                    value={row.amount}
+                    currency="AED"
+                    signed={false}
                     onClick={() => {}}
                   />
                 ))}
               </div>
             </Spec>
 
-            <Spec label="Neutral — plain balances, static, with a badge">
-              <div className="overflow-hidden rounded-card border border-line">
-                {ACCOUNTS.map((row) => (
+            <Spec label="Static — no pointer, with a badge">
+              <div className="overflow-hidden rounded-card border border-line shadow-card">
+                {CONTRIBUTIONS.map((row) => (
                   <ListRow
-                    key={row.label}
-                    label={row.label}
-                    secondary={row.secondary}
-                    value={row.value}
-                    currency={row.currency}
+                    key={row.month}
+                    label={row.month}
+                    secondary={row.date}
+                    value={row.amount}
+                    currency="AED"
                     signed={false}
                     badge={
-                      row.secondary.startsWith('Demo') ? (
-                        <Badge tone="neutral">Demo</Badge>
-                      ) : (
-                        <Badge tone="positive">Active</Badge>
-                      )
+                      row.month === 'June' ? (
+                        <Badge tone="positive">Ahead</Badge>
+                      ) : undefined
                     }
                   />
                 ))}
@@ -273,9 +301,9 @@ export default function SpecSheet() {
         >
           <Card>
             <EmptyState
-              heading="No open positions"
-              description="When you place your first order it will appear here with its live profit or loss."
-              actionLabel="Place order"
+              heading="No goals yet"
+              description="Tell Hamood what you're saving for and he'll work out what you need to put aside each month."
+              actionLabel="Start a goal"
               onAction={() => {}}
             />
           </Card>
